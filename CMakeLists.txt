@@ -14,6 +14,7 @@ set(SOURCES
     src/initialization.cpp
     src/input.cpp
     src/model.cpp
+    src/MNISTDataLoader.cpp
 )
 
 add_executable(mnist_cpp ${SOURCES})
