@@ -1,2 +1,5 @@
 build/
 .vscode/
+examples/train/*.*
+examples/test/*.*
+examples/*.csv
