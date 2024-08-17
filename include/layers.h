@@ -5,7 +5,7 @@
 #include <string>
 
 
-typedef void (*act_func)(std::vector<float> *) ;
+typedef void (*act_func)(std::vector<double> *) ;
 
 typedef struct{
     std::string layer_name;
@@ -16,11 +16,12 @@ typedef struct{
 
 class Layer{
     public:
-        std::vector<std::vector<float> > output;
+        std::vector<std::vector<double> > output;
+        std::vector<std::vector<double> > grad;
         virtual ~Layer(){};
         virtual void initialize(int input_size) = 0;
-        virtual void forward(std::vector<std::vector<float> > *input) = 0;
-        virtual void backward(std::vector<std::vector<float> > *input) = 0;
+        virtual void forward(std::vector<std::vector<double> > *input) = 0;
+        virtual void backward(std::vector<std::vector<double> > *input) = 0;
         virtual LayerSummary get_summary() = 0;
 };
 
@@ -28,25 +29,24 @@ class Dense: public Layer{
     public:
         Dense(int output_size, act_func activation = NULL);
         virtual void initialize(int input_size);
-        virtual void forward(std::vector<std::vector<float> > *input);
-        virtual void backward(std::vector<std::vector<float> > *input);
+        virtual void forward(std::vector<std::vector<double> > *input);
+        virtual void backward(std::vector<std::vector<double> > *input);
         virtual LayerSummary get_summary();
 
     private: 
         act_func activation;
-        std::vector<std::vector<float> > weights;
-        std::vector<float> bias;
+        std::vector<std::vector<double> > weights;
+        std::vector<double> bias;
         LayerSummary summary;
         bool initialized = false;
-
 };
 
 class Input: public Layer{
     public: 
         Input(int output_size);
         virtual void initialize(int input_size);
-        virtual void forward(std::vector<std::vector<float> > *input);
-        virtual void backward(std::vector<std::vector<float> > *input);
+        virtual void forward(std::vector<std::vector<double> > *input);
+        virtual void backward(std::vector<std::vector<double> > *input);
         virtual LayerSummary get_summary();
     private:
         LayerSummary summary;

@@ -15,10 +15,10 @@ void Input::initialize(int input_size){
     
 }
 
-void Input::forward(std::vector<std::vector<float> > *input){
+void Input::forward(std::vector<std::vector<double> > *input){
     if(input->size() != this->summary.batch_size){
         this->summary.batch_size = input->size();
-        this->output = std::vector<std::vector<float> >(this->summary.batch_size, std::vector<float>(this->summary.output_size, 0));
+        this->output = std::vector<std::vector<double> >(this->summary.batch_size, std::vector<double>(this->summary.output_size, 0));
     }
 
     for(int batch = 0; batch < this->summary.batch_size; batch++){
@@ -28,7 +28,7 @@ void Input::forward(std::vector<std::vector<float> > *input){
     }
 }
 
-void Input::backward(std::vector<std::vector<float> > *input){
+void Input::backward(std::vector<std::vector<double> > *input){
     std::printf("Not implemented\n");
 }
 

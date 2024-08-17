@@ -3,10 +3,10 @@
 
 #include <vector>
 
-void relu(std::vector<float> *matrix);
+void relu(std::vector<double> *matrix);
 
-void sigmoid(std::vector<float> *matrix);
+void sigmoid(std::vector<double> *matrix);
 
-void softmax(std::vector<float> *matrix);
+void softmax(std::vector<double> *matrix);
 
 #endif // ACTIVATION_H
