@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <cmath>
 #include "model.h"
 
 Model::Model(){
@@ -17,22 +18,69 @@ void Model::add(Layer *layer){
     this->layers.push_back(layer);
 }
 
-std::vector<std::vector<float> > Model::forward(std::vector<std::vector<float> > *input){
-    // this->layers[0]->initialize(input->at(0).size());
-    // this->layers[1]->initialize(this->layers[0]->output[0].size());
+std::vector<std::vector<double> > Model::forward(std::vector<std::vector<double> > *input){
     this->layers[1]->forward(input);
     this->layers[2]->forward(&this->layers[1]->output);
-    return this->layers[this->layers.size()-1]->output;
+    return this->layers[2]->output;
 }
 
-void Model::backward(){
-    std::printf("Not implemented\n");
+void Model::train(DataLoader *x, int epochs, int batch_size, double learning_rate){
+
+    for(int i=0; i<epochs; i++){
+        std::printf("Epoch %d\n", i);
+        std::vector<Data> batch_data = x->get_batch(batch_size);
+
+        std::vector<std::vector<double> > batch_inputs(batch_size, std::vector<double>(batch_data.size(), 0));
+        for(int j=0; j<batch_data.size(); j++){
+            batch_inputs[j] = batch_data[j].input;
+        }
+
+        std::vector<std::vector<double> > result = this->forward(&batch_inputs);
+
+        // calculate the loss for this step using mse
+
+        // loss = 1/k * SUM[j=0 -> k](aj - pj)^2 where aj is the actual value and pj is the predicted value
+        // loss for batch = 1/N * SUM[i=0 -> N](loss) where N is the number of samples in the batch
+
+        // loss vector representing the loss per output node averaged over the batches
+        double loss = 0;
+
+        for(int batch = 0; batch < result.size(); batch++){
+            int target_id = batch_data[batch].label;
+            std::vector<double> target_vec = this->get_one_hot(target_id, result[batch].size());
+            double batch_loss = 0;
+            for(int out_idx = 0; out_idx < result[batch].size(); out_idx++){
+                batch_loss += std::pow(target_vec[out_idx] - result[batch][out_idx], 2);
+            }
+            batch_loss *= (1/static_cast<double>(result[batch].size()));
+            loss += batch_loss;
+        }
+
+        loss *= (1/static_cast<double>(result.size()));
+        std::printf("\tLoss: %f\n", loss);
+
+        
+    }
+}
+
+std::vector<double> Model::get_one_hot(int label, int size){
+    std::vector<double> one_hot(size, 0);
+    one_hot[label] = 1;
+    return one_hot;
+}
+
+void Model::save(std::string filename){
+    // TODO: Implement model saving
+}
+
+void Model::load(std::string filename){
+    // TODO: Implement model loading
 }
 
 void Model::summary(){
     std::printf("%-10s%-10s%-10s\n", "Layer", "Output", "Param #");
     std::printf("------------------------------------------\n");
-    float trainable_param_count = 0;
+    double trainable_param_count = 0;
     for(int i=0; i<this->layers.size(); i++){
         LayerSummary summary = this->layers[i]->get_summary();
         std::string layer_name = summary.layer_name + "_" + std::to_string(i);
