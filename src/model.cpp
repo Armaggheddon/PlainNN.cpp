@@ -43,21 +43,27 @@ void Model::train(DataLoader *x, int epochs, int batch_size, double learning_rat
         // loss for batch = 1/N * SUM[i=0 -> N](loss) where N is the number of samples in the batch
 
         // loss vector representing the loss per output node averaged over the batches
-        double loss = 0;
+        std::vector<double> loss(result[0].size(), 0);
 
         for(int batch = 0; batch < result.size(); batch++){
             int target_id = batch_data[batch].label;
             std::vector<double> target_vec = this->get_one_hot(target_id, result[batch].size());
-            double batch_loss = 0;
             for(int out_idx = 0; out_idx < result[batch].size(); out_idx++){
-                batch_loss += std::pow(target_vec[out_idx] - result[batch][out_idx], 2);
+                loss[out_idx] += 1/static_cast<double>(result[batch].size())*std::pow(target_vec[out_idx] - result[batch][out_idx], 2);
             }
-            batch_loss *= (1/static_cast<double>(result[batch].size()));
-            loss += batch_loss;
         }
 
-        loss *= (1/static_cast<double>(result.size()));
-        std::printf("\tLoss: %f\n", loss);
+        double total_loss = 0;
+        for(int j = 0; j< loss.size(); j++){
+            loss[j] = loss[j]/static_cast<double>(batch_size);
+            total_loss += loss[j];
+            std::printf("\tLoss[%d]: %f\n", j, loss[j]);
+        }
+        std::printf("\tTotal Loss: %f\n", total_loss);
+
+        // backpropagation
+        // calculate the gradients for the last layer
+
 
         
     }
