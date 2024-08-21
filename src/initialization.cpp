@@ -4,33 +4,33 @@
 #include <cstdio>
 #include "initialization.h"
 
-void random_uniform(std::vector<std::vector<double> > *matrix, double min, double max){
+void random_uniform(std::vector<std::vector<float> > *matrix, float min, float max){
     srand((unsigned int) time(NULL));
     for(int i=0; i<matrix->size(); i++){
         for(int j=0; j<matrix->at(i).size(); j++){
-            matrix->at(i).at(j) = min + static_cast <double> (std::rand()) /( static_cast <double> (RAND_MAX/(max-min)));
+            matrix->at(i).at(j) = min + static_cast <float> (std::rand()) /( static_cast <float> (RAND_MAX/(max-min)));
         }    
     }
 }
 
-void random_normal(std::vector<std::vector<double> > *matrix, double mean, double std){
+void random_normal(std::vector<std::vector<float> > *matrix, float mean, float std){
     srand((unsigned int) time(NULL));
     for(int i=0; i<matrix->size(); i++){
         for(int j=0; j<matrix->at(i).size(); j++){
-            matrix->at(i).at(j) = mean + std * static_cast <double> (std::rand()) /( static_cast <double> (RAND_MAX));
+            matrix->at(i).at(j) = mean + std * static_cast <float> (std::rand()) /( static_cast <float> (RAND_MAX));
         }
     }
 }
 
-void zeros(std::vector<std::vector<double> > *matrix){
+void zeros(std::vector<std::vector<float> > *matrix){
     constant(matrix, 0);
 }
 
-void ones(std::vector<std::vector<double> > *matrix){
+void ones(std::vector<std::vector<float> > *matrix){
     constant(matrix, 1);
 }
 
-void constant(std::vector<std::vector<double> > *matrix, double value){
+void constant(std::vector<std::vector<float> > *matrix, float value){
     for(int i=0; i<matrix->size(); i++){
         for(int j=0; j<matrix->at(i).size(); j++){
             matrix->at(i).at(j) = value;
@@ -38,7 +38,7 @@ void constant(std::vector<std::vector<double> > *matrix, double value){
     }
 }
 
-void glorot_uniform(std::vector<std::vector<double> > *matrix, int input_size, int output_size){
-    double limit = std::sqrt(6.0) / std::sqrt(input_size + output_size);
+void glorot_uniform(std::vector<std::vector<float> > *matrix, int input_size, int output_size){
+    float limit = std::sqrt(6.0) / std::sqrt(input_size + output_size);
     random_uniform(matrix, -limit, limit);
 }

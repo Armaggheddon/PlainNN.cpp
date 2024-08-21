@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-MNISTDataLoader::MNISTDataLoader(std::string dataset_root_folder, double split){
+MNISTDataLoader::MNISTDataLoader(std::string dataset_root_folder, float split){
     this->train_data = std::vector<DataInfo>();
     this->test_data = std::vector<DataInfo>();
     this->val_data = std::vector<DataInfo>();
@@ -83,6 +83,7 @@ void MNISTDataLoader::load(){
 void MNISTDataLoader::shuffle(){
     auto rng = std::default_random_engine {};
     std::shuffle(std::begin(this->train_indexes), std::end(this->train_indexes), rng);
+    std::printf("Top 10 train indexes\n");
     std::shuffle(std::begin(this->val_indexes), std::end(this->val_indexes), rng);
 }
 
@@ -104,9 +105,9 @@ std::vector<Data> MNISTDataLoader::get_batch(int batch_size){
         }
 
         // Normalize image and flatten input image
-        std::vector<double> input = std::vector<double>(width*height, 0);
+        std::vector<float> input = std::vector<float>(width*height, 0);
         for(int j=0; j<width*height; j++){
-            input[j] = (double)image[j]/255.0;
+            input[j] = (float)image[j]/255.0;
         }
 
         Data data;
@@ -134,9 +135,9 @@ Data MNISTDataLoader::get_sample(){
     }
 
     // Normalize image and flatten input image
-    std::vector<double> input = std::vector<double>(width*height, 0);
+    std::vector<float> input = std::vector<float>(width*height, 0);
     for(int j=0; j<width*height; j++){
-        input[j] = (double)image[j]/255.0;
+        input[j] = (float)image[j]/255.0;
     }
 
     Data data;

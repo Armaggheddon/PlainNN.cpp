@@ -13,34 +13,34 @@ void Dense::initialize(int input_size){
     this->summary.input_size = input_size;
     this->summary.batch_size = 1;
     this->summary.param_count = input_size*summary.output_size + summary.output_size;
-    this->summary.param_size = this->summary.param_count*sizeof(double); 
+    this->summary.param_size = this->summary.param_count*sizeof(float); 
 
-    this->weights = std::vector<std::vector<double> >(
+    this->weights = std::vector<std::vector<float> >(
         summary.output_size, 
-        std::vector<double>(input_size, 0)
+        std::vector<float>(input_size, 0)
     );
     glorot_uniform(&this->weights, input_size, this->summary.output_size);
     
-    this->grad = std::vector<std::vector<double> >(
+    this->grad = std::vector<std::vector<float> >(
         summary.output_size, 
-        std::vector<double>(input_size, 0)
+        std::vector<float>(input_size, 0)
     );
     glorot_uniform(&this->grad, 0, summary.output_size);
 
-    this->bias = std::vector<double>(summary.output_size, 0);
+    this->bias = std::vector<float>(summary.output_size, 0);
     
-    this->output = std::vector<std::vector<double> >(1, std::vector<double>(summary.output_size, 0));
+    this->output = std::vector<std::vector<float> >(1, std::vector<float>(summary.output_size, 0));
 
     this->initialized = true;
 }
 
-void Dense::forward(std::vector<std::vector<double> > *input){
+void Dense::forward(std::vector<std::vector<float> > *input){
 
     // Check if input size matches output size, if not, 
     // output size has to be changed to match the current run
     if(input->size() != this->summary.batch_size){
         this->summary.batch_size = input->size();
-        this->output = std::vector<std::vector<double> >(this->summary.batch_size, std::vector<double>(this->summary.output_size, 0));
+        this->output = std::vector<std::vector<float> >(this->summary.batch_size, std::vector<float>(this->summary.output_size, 0));
     }
 
     for(int batch = 0; batch < this->summary.batch_size; batch++){
@@ -62,7 +62,7 @@ LayerSummary Dense::get_summary(){
     return this->summary;
 }
 
-void Dense::backward(std::vector<std::vector<double> > *grads){
+void Dense::backward(std::vector<std::vector<float> > *grads){
 
     for(int batch = 0; batch < this->summary.batch_size; batch++){
         for(int perceptron = 0; perceptron < this->summary.output_size; perceptron++){

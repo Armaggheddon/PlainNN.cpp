@@ -10,7 +10,7 @@ typedef struct{
 } DataInfo;
 
 typedef struct{
-    std::vector<double> input;
+    std::vector<float> input;
     int label;
 } Data;
 
@@ -21,7 +21,7 @@ class DataLoader{
         std::vector<DataInfo> test_data;
         std::vector<DataInfo> val_data;
         std::string dataset_root_folder;
-        double split;
+        float split;
         virtual ~DataLoader(){};
         virtual void load() = 0;
         virtual void shuffle() = 0;
@@ -31,7 +31,7 @@ class DataLoader{
 
 class MNISTDataLoader : public DataLoader{
     public:
-        MNISTDataLoader(std::string dataset_root_folder, double split);
+        MNISTDataLoader(std::string dataset_root_folder, float split);
         virtual void load();
         virtual void shuffle();
         virtual std::vector<Data> get_batch(int batch_size);
