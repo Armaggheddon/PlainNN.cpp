@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <activation.h>
 
 
-typedef void (*act_func)(std::vector<float> *) ;
 
 typedef struct{
     std::string layer_name;
@@ -28,14 +28,14 @@ class Layer{
 
 class Dense: public Layer{
     public:
-        Dense(int output_size, act_func activation = NULL);
+        Dense(int output_size, ActivationFn *activation);
         virtual void initialize(int input_size);
         virtual void forward(std::vector<std::vector<float> > *input);
         virtual void backward(std::vector<std::vector<float> > *input);
         virtual LayerSummary get_summary();
 
     private: 
-        act_func activation;
+        ActivationFn *activation;
         // std::vector<std::vector<float> > weights;
         std::vector<float> bias;
         LayerSummary summary;

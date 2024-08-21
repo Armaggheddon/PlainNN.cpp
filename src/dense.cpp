@@ -1,9 +1,10 @@
 #include <cstdio>
 #include "layers.h"
 #include "initialization.h"
+#include "activation.h"
 
 
-Dense::Dense(int output_size, act_func activation){
+Dense::Dense(int output_size, ActivationFn *activation){
     this->summary.layer_name = "dense";
     this->summary.output_size = output_size;
     this->activation = activation;
@@ -53,7 +54,7 @@ void Dense::forward(std::vector<std::vector<float> > *input){
         }
 
         if(this->activation != NULL){
-            this->activation(&this->output[batch]);
+            this->activation->forward(&this->output[batch]);
         }
     }
 }

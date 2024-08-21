@@ -29,8 +29,8 @@ int main(int argc, char* argv[]){
 
     Model model = Model();
     model.add(new Input(784));
-    model.add(new Dense(128, &relu)); //128, relu
-    model.add(new Dense(10, &softmax)); //10, softmax
+    model.add(new Dense(128, new ReLU())); //128, relu
+    model.add(new Dense(10, new Softmax())); //10, softmax
 
     Data input_sample = mnist_dataset.get_sample(); 
 

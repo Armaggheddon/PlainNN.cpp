@@ -3,10 +3,29 @@
 
 #include <vector>
 
-void relu(std::vector<float> *matrix);
 
-void sigmoid(std::vector<float> *matrix);
+class ActivationFn{
+    public:
+        virtual void forward(std::vector<float> *matrix) = 0;
+        virtual void backward(std::vector<float> *matrix) = 0;
+};
 
-void softmax(std::vector<float> *matrix);
+class ReLU : public ActivationFn{
+    public:
+        void forward(std::vector<float> *matrix);
+        void backward(std::vector<float> *matrix);
+};
+
+class Sigmoid : public ActivationFn{
+    public:
+        void forward(std::vector<float> *matrix);
+        void backward(std::vector<float> *matrix);
+};
+
+class Softmax : public ActivationFn{
+    public:
+        void forward(std::vector<float> *matrix);
+        void backward(std::vector<float> *matrix);
+};
 
 #endif // ACTIVATION_H
