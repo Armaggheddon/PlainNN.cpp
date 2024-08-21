@@ -29,14 +29,14 @@ int main(int argc, char* argv[]){
 
     Model model = Model();
     model.add(new Input(784));
-    model.add(new Dense(128, &relu));
-    model.add(new Dense(10, &softmax));
+    model.add(new Dense(128, &relu)); //128, relu
+    model.add(new Dense(10, &softmax)); //10, softmax
 
     Data input_sample = mnist_dataset.get_sample(); 
 
     model.compile();
     model.summary();
-    std::vector<std::vector<double> > result = model.forward(new std::vector<std::vector<double> >(1, input_sample.input));
+    std::vector<std::vector<float> > result = model.forward(new std::vector<std::vector<float> >(1, input_sample.input));
     std::printf("Expected label: %d\n", input_sample.label);
     for(int i=0; i<result.size(); i++){
         std::printf("Batch[%d]:\n", i);
@@ -45,18 +45,18 @@ int main(int argc, char* argv[]){
         }
     }
 
-    model.train(&mnist_dataset, 50, 64, 0.1);
+    model.train(&mnist_dataset, 50, 256, 0.5);
 
-    // Data sample = mnist_dataset.get_sample();
-    // std::vector<std::vector<double> > sample_input(1, std::vector<double>(784, 0));
-    // for(int i=0; i<sample.input.size(); i++){
-    //     sample_input[0][i] = sample.input[i];
-    // }
+    Data sample = mnist_dataset.get_sample();
+    std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
+    for(int i=0; i<sample.input.size(); i++){
+        sample_input[0][i] = sample.input[i];
+    }
 
-    // std::vector<std::vector<double> > test = model.forward(&sample_input);
+    std::vector<std::vector<float> > test = model.forward(&sample_input);
     
-    // std::printf("Expected label: %d\n", sample.label);
-    // for(int j=0; j<result[0].size(); j++){
-    //     std::printf("\tProb %d -> %f %% \n", j, result[0][j]*100);
-    // }
+    std::printf("Expected label: %d\n", sample.label);
+    for(int j=0; j<result[0].size(); j++){
+        std::printf("\tProb %d -> %f %% \n", j, result[0][j]*100);
+    }
 }
