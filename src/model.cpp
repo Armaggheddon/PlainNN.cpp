@@ -25,114 +25,119 @@ std::vector<std::vector<float> > Model::forward(std::vector<std::vector<float> >
 }
 
 void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate){
-    Data test_sample = x->get_sample();
+    Data test_data = x->get_sample();
     std::vector<std::vector<float> > test_input(1, std::vector<float>(784, 0));
-    for(int i=0; i<test_sample.input.size(); i++){
-        test_input[0][i] = test_sample.input[i];
+    int test_label = test_data.label;
+    for(int i=0; i<test_data.input.size(); i++){
+        test_input[0][i] = test_data.input[i];
     }
-    for(int i=0; i<epochs; i++){
-        std::printf("Epoch %d\n", i);
-        std::vector<Data> batch_data = x->get_batch(batch_size);
 
-        std::vector<std::vector<float> > batch_inputs(batch_size, std::vector<float>(batch_data.size(), 0));
-        for(int j=0; j<batch_data.size(); j++){
-            batch_inputs[j] = batch_data[j].input;
+    for(int epoch = 0; epoch<epochs; epoch++){
+
+        x->new_epoch();
+
+        int layer_count = this->layers.size() - 1; // exclude input layer
+
+        std::printf("Epoch %d\n", epoch);
+
+        int steps = std::ceil(static_cast<double>(x->train_data.size())/batch_size);
+        for(int step = 0; step < steps; step++){
+
+            std::vector<Data> batch_data = x->get_batch(batch_size);
+
+            // TODO: move this to the layer class
+            std::fill(this->layers[1]->grad.begin(), this->layers[1]->grad.end(), std::vector<float>(this->layers[1]->output[0].size(), 0));
+            std::fill(this->layers[2]->grad.begin(), this->layers[2]->grad.end(), std::vector<float>(this->layers[2]->output[0].size(), 0));
+
+            std::vector<std::vector<float> > batch_inputs(batch_size, std::vector<float>(batch_data.size(), 0));
+            
+            for(int j=0; j<batch_data.size(); j++){
+                batch_inputs[j] = batch_data[j].input;
+            }
+
+            std::vector<std::vector<float> > result = this->forward(&batch_inputs);
+
+            std::vector<std::vector<float> > target(batch_size, std::vector<float>(10, 0));
+            for(int j=0; j<batch_data.size(); j++){
+                target[j] = this->get_one_hot(batch_data[j].label, 10);
+            }
+            std::vector<float> mse = this->mse(result, target);
+            std::vector<float> loss = this->loss(result, batch_inputs);
+
+            float avg_mse = 0;
+            for(int j=0; j<mse.size(); j++){
+                avg_mse += mse[j];
+            }
+            
+            // calculate delta for last layer
+            for(int batch = 0; batch<result.size(); batch++){
+                for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
+                    for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
+                        this->layers[2]->grad[perceptron][weight] += (target[batch][perceptron] - result[batch][perceptron]) * result[batch][perceptron] * (1 - result[batch][perceptron]) * this->layers[1]->output[batch][weight];
+                    }
+                }
+            }
+
+            // calculate delta for second last layer
+            for(int batch = 0; batch<result.size(); batch++){
+                for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
+                    for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
+                        float eo1_net01 = 0;
+                        for(int i=0; i<this->layers[2]->weights.size(); i++){
+                            eo1_net01 += (target[batch][i] - result[batch][i]) * this->layers[2]->output[batch][i] * (1 - this->layers[2]->output[batch][i]);
+                        }
+                        this->layers[1]->grad[perceptron][weight] += eo1_net01 * 1 * this->layers[1]->weights[perceptron][weight] * batch_inputs[batch][weight];
+                    }
+                }
+            }
+                        
+            char progress_bar[20+1] = {0};
+            int progress = (int)((static_cast<float>(step)/steps)*20);
+            for(int i=0; i<progress; i++){
+                progress_bar[i] = '=';
+            }
+            for(int i=progress; i<20; i++){
+                progress_bar[i] = ' ';
+            }
+            progress_bar[20] = '\0';
+            std::printf("\r\t|%s| %d/%d Loss: %f", 
+                progress_bar, step, steps, avg_mse);
+            std::fflush(stdout);
         }
 
-        std::vector<std::vector<float> > result = this->forward(&batch_inputs);
+        std::printf("\n");
 
-        std::vector<std::vector<float> > target(batch_size, std::vector<float>(10, 0));
-        for(int j=0; j<batch_data.size(); j++){
-            target[j] = this->get_one_hot(batch_data[j].label, 10);
+        // update layers weights
+        for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
+            for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
+                // average the gradient for the minibatch, and for the results 
+                this->layers[2]->weights[perceptron][weight] += (learning_rate * this->layers[2]->grad[perceptron][weight]) / (batch_size * steps);
+            }
         }
+        // update weights for second last layer
+        for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
+            for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
+                this->layers[1]->weights[perceptron][weight] += (learning_rate * this->layers[1]->grad[perceptron][weight]) / (batch_size * steps);
+            }
+        }
+
+        // run forward pass
+        std::vector<std::vector<float> > result = this->forward(&test_input);
+        std::vector<std::vector<float> > target;
+        target.push_back(this->get_one_hot(test_data.label, 10));
         std::vector<float> mse = this->mse(result, target);
-        std::vector<float> loss = this->loss(result, batch_inputs);
 
         float avg_mse = 0;
         for(int j=0; j<mse.size(); j++){
             avg_mse += mse[j];
         }
-        std::printf("Average MSE: %f\n", avg_mse);
 
-        std::vector<std::vector<float> > deltas(this->layers[2]->weights.size(), std::vector<float>(layers[2]->weights[0].size(), 0));
-        // calculate delta for last layer
-        for(int batch = 0; batch<result.size(); batch++){
-            for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
-                for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
-                    deltas[perceptron][weight] += (target[batch][perceptron] - result[batch][perceptron]) * result[batch][perceptron] * (1 - result[batch][perceptron]) * this->layers[1]->output[batch][weight];
-                }
-            }
-        }
-
-        // average deltas for batch size
-        for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
-            for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
-                deltas[perceptron][weight] /= static_cast<float>(result.size());
-            }
-        }
-
-        // update weights for last layer
-        for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
-            for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
-                this->layers[2]->weights[perceptron][weight] += learning_rate * deltas[perceptron][weight];
-            }
-        }
-
-        // calculate delta for second last layer
-        std::vector<std::vector<float> > deltas_2(this->layers[1]->weights.size(), std::vector<float>(layers[1]->weights[0].size(), 0));
-        for(int batch = 0; batch<result.size(); batch++){
-            for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
-                for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
-                    float eo1_net01 = 0;
-                    for(int i=0; i<this->layers[2]->weights.size(); i++){
-                        eo1_net01 += (target[batch][i] - result[batch][i]) * this->layers[2]->output[batch][i] * (1 - this->layers[2]->output[batch][i]);
-                    }
-                    deltas_2[perceptron][weight] += eo1_net01 * 1 * this->layers[1]->weights[perceptron][weight] * batch_inputs[batch][weight];
-                }
-            }
-        }
-
-        std::printf("HERE\n");
-
-        // average deltas for batch size
-        for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
-            for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
-                deltas_2[perceptron][weight] /= static_cast<float>(result.size());
-            }
-        }
-
-        // update weights for second last layer
-        for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
-            for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
-                this->layers[1]->weights[perceptron][weight] -= learning_rate * deltas_2[perceptron][weight];
-            }
-        }
-
-        // run forward pass
-        result = this->forward(&test_input);
-        target.clear();
-        target.push_back(this->get_one_hot(test_sample.label, 10));
-        mse = this->mse(result, target);
-
-        avg_mse = 0;
-        for(int j=0; j<mse.size(); j++){
-            avg_mse += mse[j];
-        }
-
-        std::printf("Test Average MSE: %f\n", avg_mse);
+        std::printf("\tTest Average MSE: %f\n", avg_mse);
         // print probabilities
-        std::printf("Expected label: %d\n", test_sample.label);
+        std::printf("\tExpected label: %d\n", test_label);
         for(int j=0; j<result[0].size(); j++){
-            std::printf("\tProb %d -> %f %% \n", j, result[0][j]*100);
+            std::printf("\t\tProb %d -> %f %% \n", j, result[0][j]*100);
         }
-        
-        // if(i == epochs-1){
-        //     for(int j = 0; j<loss.size(); j++){
-        //         std::printf("Loss[%d]: %f\n", j, loss[j]);
-        //     }
-        // }
-
-        // calculate the loss for this step using mse
     }
 }
 
