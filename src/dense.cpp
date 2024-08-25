@@ -26,7 +26,6 @@ void Dense::initialize(int input_size){
         summary.output_size, 
         std::vector<float>(input_size, 0)
     );
-    glorot_uniform(&this->grad, 0, summary.output_size);
 
     this->bias = std::vector<float>(summary.output_size, 0);
     
