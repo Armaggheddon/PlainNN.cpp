@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
         std::printf("Arg %d: %s\n", i, argv[i]);
     }
 
-    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.8);
+    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.5);
     mnist_dataset.load();
     mnist_dataset.shuffle();
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
     model.add(new Dense(128, new ReLU())); //128, relu
     model.add(new Dense(10, new Softmax())); //10, softmax
 
-    Data input_sample = mnist_dataset.get_sample(); 
+    Data input_sample = mnist_dataset.get_sample();
 
     model.compile();
     model.summary();
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    model.train(&mnist_dataset, 50, 256, 0.5);
+    model.train(&mnist_dataset, 20, 256, 0.1);
 
     Data sample = mnist_dataset.get_sample();
     std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
