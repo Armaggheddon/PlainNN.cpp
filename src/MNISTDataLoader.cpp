@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-MNISTDataLoader::MNISTDataLoader(std::string dataset_root_folder, float split){
+MNISTDataLoader::MNISTDataLoader(std::string dataset_root_folder, float split, bool auto_shuffle){
     this->train_data = std::vector<DataInfo>();
     this->test_data = std::vector<DataInfo>();
     this->val_data = std::vector<DataInfo>();
@@ -15,6 +15,7 @@ MNISTDataLoader::MNISTDataLoader(std::string dataset_root_folder, float split){
     this->val_indexes = std::vector<int>();
     this->dataset_root_folder = dataset_root_folder;
     this->split = split;
+    this->auto_shuffle = auto_shuffle;
 }
 
 void MNISTDataLoader::load(){
@@ -92,6 +93,7 @@ std::vector<Data> MNISTDataLoader::get_batch(int batch_size){
     std::vector<Data> batch = std::vector<Data>();
 
     int idx = this->current_offset;
+
     for(int i=0; i<batch_size; i++){
 
         DataInfo info = this->train_data[this->train_indexes[idx]];
@@ -121,6 +123,14 @@ std::vector<Data> MNISTDataLoader::get_batch(int batch_size){
 
     this->current_offset = idx;
     return batch;
+}
+
+void MNISTDataLoader::new_epoch(){
+    if(this->auto_shuffle){
+        this->shuffle();
+    }
+
+    this->current_offset = 0;
 }
 
 Data MNISTDataLoader::get_sample(){
