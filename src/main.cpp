@@ -16,18 +16,26 @@
 #include "initialization.h"
 #include "data_loader.h"
 
+#include "model_loader.h"
+
 int main(int argc, char* argv[]){
+
+    Model loaded_model = ModelLoader::loadJson("../checkpoints/mnist/ckpt_epoch_0.json");
+    ModelLoader::loadWeights("../checkpoints/mnist/ckpt_epoch_0.weights", loaded_model);
 
     for(int i=0; i<argc; i++){
         std::printf("Arg %d: %s\n", i, argv[i]);
     }
 
-    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.5);
+    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);
     mnist_dataset.load();
     mnist_dataset.shuffle();
 
 
     Model model = Model();
+
+    // model.load("../checkpoints/mnist/ckpt_epoch_0");
+
     model.add(new Input(784));
     model.add(new Dense(128, new ReLU())); //128, relu
     model.add(new Dense(10, new Softmax())); //10, softmax
@@ -45,7 +53,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    model.train(&mnist_dataset, 20, 256, 0.1);
+    model.train(&mnist_dataset, 20, 64, 0.2, "../checkpoints/mnist");
 
     Data sample = mnist_dataset.get_sample();
     std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
