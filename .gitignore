@@ -3,3 +3,4 @@ build/
 examples/train/
 examples/test/
 examples/*.csv
+checkpoints/*
