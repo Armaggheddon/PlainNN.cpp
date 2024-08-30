@@ -9,6 +9,7 @@
 
 typedef struct{
     std::string layer_name;
+    std::string activation_fn;
     int input_size, batch_size, output_size;
     int param_count;
     long int param_size; // in bytes

@@ -5,6 +5,7 @@
 Input::Input(int output_size){
     this->summary = LayerSummary();
     this->summary.layer_name = "input";
+    this->summary.activation_fn = "none";
     this->summary.output_size = output_size;
     this->summary.batch_size = 1;
     this->summary.param_count = 0;

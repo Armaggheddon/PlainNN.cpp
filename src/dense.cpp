@@ -6,6 +6,7 @@
 
 Dense::Dense(int output_size, ActivationFn *activation){
     this->summary.layer_name = "dense";
+    this->summary.activation_fn = activation->name;
     this->summary.output_size = output_size;
     this->activation = activation;
 }
