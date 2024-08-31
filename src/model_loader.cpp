@@ -107,8 +107,6 @@ Model ModelLoader::loadJson(const std::string& path){
 
     }
 
-    model.compile();
-
     return model;
 }
 
@@ -140,12 +138,12 @@ void ModelLoader::loadWeights(const std::string& path, Model& model){
         std::printf("Loaded weights for layer %s: (%d, %d)\n", summary.layer_name.c_str(), summary.input_size, summary.output_size);
 
         // load biases
-        for(int out = 0; out < summary.output_size; out++){
-            file.read(float_buff, sizeof(float_buff));
-            float bias;
-            memcpy(&bias, float_buff, sizeof(float_buff));
-            // layer->bias[out] = bias; // TODO: allow bias setting
-        }
+        // for(int out = 0; out < summary.output_size; out++){
+        //     file.read(float_buff, sizeof(float_buff));
+        //     float bias;
+        //     memcpy(&bias, float_buff, sizeof(float_buff));
+        //     // layer->bias[out] = bias; // TODO: allow bias setting
+        // }
 
         std::printf("Loaded biases for layer %s: (%d)\n", summary.layer_name.c_str(), summary.output_size);
     }

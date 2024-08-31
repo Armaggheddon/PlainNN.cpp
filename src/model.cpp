@@ -6,12 +6,21 @@
 #include <vector>
 #include <cmath>
 #include "model.h"
+#include "model_loader.h"
 
 Model::Model(){
     this->layers = std::vector<Layer*>();
+    this->is_compiled = false;
 }
 
 void Model::add(Layer *layer){
+    if(this->is_compiled){
+        // Calling add after the model has been compiled 
+        // will reset the model to an uncompiled state
+        // requiring another call to compile
+        this->is_compiled = false;
+    }
+
     LayerSummary layer_info = layer->get_summary();
     if(this->layers.size() == 0 && (layer_info.layer_name.compare("input"))){
         std::printf("Error: First layer must be Input layer\n");
@@ -254,106 +263,6 @@ void Model::save(std::string filename){
     std::fclose(model_weights_file);
 }
 
-void Model::load(std::string filename){
-
-    // check if filename has any extension, if is the case
-    // load only the extension, otherwise load both .json and .weights
-    // files
-
-    bool has_extension = false;
-    std::size_t is_json = filename.find(".json") != std::string::npos; // if index is not found with find, returns std::string::npos
-    std::size_t is_weights = filename.find(".weights") != std::string::npos;
-    std::printf("Loading model from %s\n", filename.c_str());
-    if( is_json || is_weights){
-        if(is_json){
-            // parse only json file
-            std::vector<LayerSummary> layers = this->_parse_json(filename);
-            this->_build_model_from_layer_summary(layers);
-            std::printf("Parsing json file: %s\n", filename.c_str());
-        }
-        else if (is_weights){
-            // parse only weights file
-            if(this->layers.size() == 0){
-                std::printf("Error: Model has no layers\n");
-                return;
-            }
-            this->_parse_weights(filename);
-            std::printf("Parsing weights file: %s\n", filename.c_str());
-        }
-        else{
-            std::printf("Error: Invalid file extension\n");
-            return;
-        }
-    }
-    else{
-        // parse both files
-        std::string json_filename = filename + ".json";
-        std::string weights_filename = filename + ".weights";
-        std::vector<LayerSummary> layers = this->_parse_json(json_filename);
-        std::printf("Parsing json file: %s\n", json_filename.c_str());
-        this->_build_model_from_layer_summary(layers);
-        this->_parse_weights(weights_filename);
-        std::printf("Parsing weights file: %s\n", weights_filename.c_str());
-    }
-
-    std::printf("Model loaded\n");
-    summary();
-}
-
-std::vector<LayerSummary> Model::_parse_json(std::string filename){
-    std::ifstream model_description_file(filename);
-    if(!model_description_file.is_open()){
-        std::printf("Error: Could not open file %s\n", filename.c_str());
-        return std::vector<LayerSummary>();
-    }
-
-    std::string line;
-    std::string model_description;
-    while(std::getline(model_description_file, line)){
-        model_description += line;
-    }
-
-    model_description_file.close();
-    
-    std::vector<LayerSummary> layers;
-    return layers;
-}
-
-void Model::_parse_weights(std::string filename){
-    FILE *weights_file = std::fopen(filename.c_str(), "rb");
-    if(weights_file == NULL){
-        std::printf("Error: Could not open file %s\n", filename.c_str());
-        return;
-    }
-
-    for(float val = 0; std::fread(&val, sizeof(float), 1, weights_file) == 1;){
-        std::printf("%f\n", val);
-    }
-
-    std::fclose(weights_file);
-}
-
-void Model::_build_model_from_layer_summary(std::vector<LayerSummary> layer_summary){
-
-    for(int i=0; i<layer_summary.size(); i++){
-        LayerSummary s = layer_summary[i];
-        if(s.layer_name.compare("input") == 0){
-            std::printf("Adding input layer\n");
-            this->add(new Input(s.output_size));
-        }
-        else if(s.layer_name.compare("dense") == 0){
-            std::printf("Adding dense layer\n");
-            this->add(new Dense(s.output_size, new ReLU()));
-        }
-        else if(s.layer_name.compare("softmax") == 0){
-            std::printf("Adding softmax layer\n");
-            this->add(new Dense(s.output_size, new Softmax()));
-        }
-    }
-
-    this->compile();
-
-}
 
 void Model::summary(){
     std::printf("%-10s%-10s%-10s\n", "Layer", "Output", "Param #");
@@ -383,3 +292,51 @@ Layer* Model::operator[](int index){
     return this->layers[index];
 }
 
+Model Model::from_json(std::string filename){
+
+    if (filename.substr(filename.find_last_of(".")).compare(".json") != 0)
+    {
+        std::printf("Error: Invalid file format, expected .json file\n");
+        throw std::invalid_argument("Invalid file format, expected .json file");
+    }
+    
+    Model model = ModelLoader::loadJson(filename);
+    model.compile();
+    return model;
+}
+
+Model Model::from_checkpoint(std::string base_filename){
+
+    int idx = base_filename.find_last_of(".");
+    if(idx != std::string::npos){
+        // means that has at least one "." in the filename
+        std::string base_filename_ext = base_filename.substr(idx);
+        if(base_filename_ext.compare(".json") == 0 || base_filename_ext.compare(".weights") == 0){
+            throw std::invalid_argument("Invalid file format, expected base filename without extension, got: " + base_filename);
+        }
+    }
+
+    std::string json_filename = base_filename + ".json";
+    std::string weights_filename = base_filename + ".weights";
+
+    Model model = Model::from_checkpoint(json_filename, weights_filename);
+    return model;
+}
+
+Model Model::from_checkpoint(const std::string json_filename, const std::string weights_filename){
+
+    if(json_filename.substr(json_filename.find_last_of(".")).compare(".json") != 0){
+        std::printf("Error: Invalid file format, expected .json file\n");
+        throw std::invalid_argument("Invalid file format, expected .json file");
+    }
+    if(weights_filename.substr(weights_filename.find_last_of(".")).compare(".weights") != 0)
+    {
+        std::printf("Error: Invalid file format, expected .weights file\n");
+        throw std::invalid_argument("Invalid file format, expected .weights file");
+    }
+
+    Model model = ModelLoader::loadJson(json_filename);
+    ModelLoader::loadWeights(weights_filename, model);
+    model.compile();
+    return model;
+}

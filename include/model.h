@@ -9,6 +9,42 @@
 class Model{
     public:
         int layers_count;
+
+        /**
+         * @brief Create a Model object from a JSON file, 
+         * only loads the model architecture, not the weights.
+         * The weights are initialized randomly.
+         * To load the weights as well, refer to the from_chepoint method.
+         * 
+         * @param filename
+         * @return Model
+         */
+        static Model from_json(const std::string filename);
+        
+        /**
+         * @brief Create a Model object from a JSON file and a weights file.
+         * Assumes that the weights file is in the same format as the one saved
+         * by the save method. Which means that both the JSON and the weights file
+         * have the same name and differ only by the extension, i.e.: model.json and model.weights.
+         * 
+         * @param json_filename common file name for the JSON and weights files without the extension
+         * @return Model
+         */
+        static Model from_checkpoint(const std::string filename);
+
+        /**
+         * @brief Create a Model object from a JSON file and a weights file. It is
+         * the same as the from_checkpoint method, but allows the user to specify
+         * the name of the weights file in case it is different from the default or 
+         * when the weights file has been downloaded from the internet. This
+         * methods supports scenarios where the file names are different
+         * 
+         * @param json_filename json file name with the .json extension
+         * @param weights_filename weights file name with the .weights extension
+         * @return Model
+         */
+        static Model from_checkpoint(const std::string json_filename, const std::string weights_filename);
+
         Model();
         void add(Layer *layer);
 
@@ -16,8 +52,7 @@ class Model{
         void summary();
         void compile();
         void train(DataLoader *x, int epochs, int batch_size, float learning_rate, std::string checkpoints_path = nullptr);
-        void save(std::string filename);
-        void load(std::string filename);
+        void save(std::string filename);        
         std::vector<float> mse(std::vector<std::vector<float> > v1, std::vector<std::vector<float> > v2);
 
         Layer* operator[](int index);
@@ -25,11 +60,8 @@ class Model{
     private:
         std::vector<Layer*> layers;
         int input_size;
-
+        bool is_compiled;
         std::vector<float> _get_one_hot(int label, int size);
-        std::vector<LayerSummary> _parse_json(std::string filename);
-        void _parse_weights(std::string filename);
-        void _build_model_from_layer_summary(std::vector<LayerSummary> layer_summary);
 
 };
 
