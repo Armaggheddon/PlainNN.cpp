@@ -39,6 +39,7 @@ class DataLoader{
         virtual std::vector<Data> get_batch(int batch_size) = 0;
         virtual void new_epoch() = 0;
         virtual Data get_sample() = 0;
+        virtual Data get_sample_for_label(int label) = 0;
 };
 
 class MNISTDataLoader : public DataLoader{
@@ -49,6 +50,7 @@ class MNISTDataLoader : public DataLoader{
         virtual std::vector<Data> get_batch(int batch_size);
         virtual void new_epoch();
         virtual Data get_sample();
+        virtual Data get_sample_for_label(int label);
     private:
         int current_offset = 0;
         std::vector<int> train_indexes;

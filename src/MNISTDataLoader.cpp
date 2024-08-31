@@ -157,3 +157,36 @@ Data MNISTDataLoader::get_sample(){
     stbi_image_free(image);
     return data;
 }
+
+Data MNISTDataLoader::get_sample_for_label(int label){
+    
+    DataInfo info;
+
+    for(int i=0; i<this->train_data.size(); i++){
+        if(this->train_data[i].label == label){
+            info = this->train_data[i];
+            break;
+        }
+    }
+
+    int width, height, channels;
+    unsigned char *image = stbi_load(info.image_path.c_str(), &width, &height, &channels, 1);
+
+    if(image == NULL){
+        std::printf("Error loading image %s\n", info.image_path.c_str());
+        return Data();
+    }
+
+    // Normalize image and flatten input image
+    std::vector<float> input = std::vector<float>(width*height, 0);
+    for(int j=0; j<width*height; j++){
+        input[j] = (float)image[j]/255.0;
+    }
+
+    Data data;
+    data.input = input;
+    data.label = info.label;
+
+    stbi_image_free(image);
+    return data;
+}
