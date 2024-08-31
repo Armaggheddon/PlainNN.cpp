@@ -5,10 +5,6 @@
 #include <vector>
 #include <cmath>
 #include <string> // Add this line to include the <string> header
-// #define STB_IMAGE_IMPLEMENTATION
-// #include "stb_image.h"
-// #define STB_IMAGE_WRITE_IMPLEMENTATION
-// #include "stb_image_write.h"
 
 #include "model.h"
 #include "layers.h"
@@ -16,16 +12,36 @@
 #include "initialization.h"
 #include "data_loader.h"
 
-#include "model_loader.h"
+void test_model(){
+    Model latest_model = Model::from_checkpoint("../checkpoints/mnist/ckpt_epoch_10");
+    latest_model.compile();
+    
+    DataLoader *mnist_dataset = new MNISTDataLoader("../examples", 0.01, true);
+    mnist_dataset->load();
+    Data sample = mnist_dataset->get_sample_for_label(0);
+
+    std::vector<std::vector<float> > sample_input;
+    sample_input.push_back(sample.input);
+
+    std::vector<std::vector<float> > test = latest_model.forward(&sample_input);
+
+    std::printf("Expected label: %d\n", sample.label);
+    for(int j=0; j<test[0].size(); j++){
+        std::printf("\tProb %d -> %f %% \n", j, test[0][j]*100);
+    }
+
+}
+
 
 int main(int argc, char* argv[]){
 
-    Model loaded_model = ModelLoader::loadJson("../checkpoints/mnist/ckpt_epoch_0.json");
-    ModelLoader::loadWeights("../checkpoints/mnist/ckpt_epoch_0.weights", loaded_model);
 
     for(int i=0; i<argc; i++){
         std::printf("Arg %d: %s\n", i, argv[i]);
     }
+
+    test_model();
+    return 0;
 
     MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);
     mnist_dataset.load();
