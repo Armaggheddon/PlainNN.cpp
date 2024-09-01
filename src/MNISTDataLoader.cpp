@@ -27,7 +27,7 @@ void MNISTDataLoader::load(){
 
     FILE *train_file = fopen(train_label_file.c_str(), "r");
 
-    if(train_file == NULL){
+    if(train_file == nullptr){
         std::printf("Error opening file %s\n", train_label_file.c_str());
         return;
     }
@@ -64,7 +64,7 @@ void MNISTDataLoader::load(){
 
     FILE *test_file = fopen(test_label_file.c_str(), "r");
 
-    if(test_file == NULL){
+    if(test_file == nullptr){
         std::printf("Error opening file %s\n", test_label_file.c_str());
         return;
     }
@@ -101,7 +101,7 @@ std::vector<Data> MNISTDataLoader::get_batch(int batch_size){
         int width, height, channels;
         unsigned char *image = stbi_load(info.image_path.c_str(), &width, &height, &channels, 1);
 
-        if(image == NULL){
+        if(image == nullptr){
             std::printf("Error loading image %s\n", info.image_path.c_str());
             continue;
         }
@@ -139,7 +139,7 @@ Data MNISTDataLoader::get_sample(){
     int width, height, channels;
     unsigned char *image = stbi_load(info.image_path.c_str(), &width, &height, &channels, 1);
 
-    if(image == NULL){
+    if(image == nullptr){
         std::printf("Error loading image %s\n", info.image_path.c_str());
         return Data();
     }
@@ -172,7 +172,7 @@ Data MNISTDataLoader::get_sample_for_label(int label){
     int width, height, channels;
     unsigned char *image = stbi_load(info.image_path.c_str(), &width, &height, &channels, 1);
 
-    if(image == NULL){
+    if(image == nullptr){
         std::printf("Error loading image %s\n", info.image_path.c_str());
         return Data();
     }

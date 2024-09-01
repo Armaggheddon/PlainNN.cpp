@@ -5,7 +5,7 @@
 #include "initialization.h"
 
 void random_uniform(std::vector<std::vector<float> > *matrix, float min, float max){
-    srand((unsigned int) time(NULL));
+    srand((unsigned int) time(nullptr));
     for(int i=0; i<matrix->size(); i++){
         for(int j=0; j<matrix->at(i).size(); j++){
             matrix->at(i).at(j) = min + static_cast <float> (std::rand()) /( static_cast <float> (RAND_MAX/(max-min)));
@@ -14,7 +14,7 @@ void random_uniform(std::vector<std::vector<float> > *matrix, float min, float m
 }
 
 void random_normal(std::vector<std::vector<float> > *matrix, float mean, float std){
-    srand((unsigned int) time(NULL));
+    srand((unsigned int) time(nullptr));
     for(int i=0; i<matrix->size(); i++){
         for(int j=0; j<matrix->at(i).size(); j++){
             matrix->at(i).at(j) = mean + std * static_cast <float> (std::rand()) /( static_cast <float> (RAND_MAX));
