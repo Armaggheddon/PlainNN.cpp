@@ -10,9 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCES
     src/main.cpp
     src/activation.cpp
-    src/dense.cpp
     src/initialization.cpp
     src/input.cpp
+    src/dense.cpp
+    src/none.cpp
     src/model.cpp
     src/MNISTDataLoader.cpp
     src/model_loader.cpp
