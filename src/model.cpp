@@ -10,33 +10,44 @@
 
 Model::Model(){
     this->layers = std::vector<Layer*>();
-    this->is_compiled = false;
+    this->is_initialized = false;
+}
+
+void Model::_check_initialized(){
+    if(!this->is_initialized){
+        std::printf("Error: Model not initialized, call initialize before running forward pass\n");
+        throw std::runtime_error("Model not initialized");
+    }
 }
 
 void Model::add(Layer *layer){
-    if(this->is_compiled){
-        // Calling add after the model has been compiled 
-        // will reset the model to an uncompiled state
-        // requiring another call to compile
-        this->is_compiled = false;
+    if(this->is_initialized){
+        // Calling add after the model has been initialized 
+        // will reset the model to an un-initialized state
+        // requiring another call to initialize
+        this->is_initialized = false;
     }
 
-    LayerSummary layer_info = layer->get_summary();
+    LayerInfo layer_info = layer->get_info();
     if(this->layers.size() == 0 && (layer_info.layer_name.compare("input"))){
         std::printf("Error: First layer must be Input layer\n");
         return;
     }
-    if(this->layers.size() == 0) this->input_size = layer_info.output_size;
+    if(this->layers.size() == 0) this->input_size = layer_info.output_neurons;
     this->layers.push_back(layer);
 }
 
 std::vector<std::vector<float> > Model::forward(std::vector<std::vector<float> > *input){
+    this->_check_initialized();
+    
     this->layers[1]->forward(input);
     this->layers[2]->forward(&this->layers[1]->output);
     return this->layers[2]->output;
 }
 
-void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate, std::string checkpoints_path){
+void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate, std::string checkpoints_root, int from_epoch){
+    this->_check_initialized();
+
     Data test_data = x->get_sample();
     std::vector<std::vector<float> > test_input(1, std::vector<float>(784, 0));
     int test_label = test_data.label;
@@ -44,9 +55,9 @@ void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate
         test_input[0][i] = test_data.input[i];
     }
 
-    std::string checkpoint_file_name_template = checkpoints_path + "/ckpt_epoch_%d";
+    std::string checkpoint_file_name_template = checkpoints_root + "/ckpt_epoch_%d";
 
-    for(int epoch = 0; epoch<epochs; epoch++){
+    for(int epoch = from_epoch; epoch<epochs; epoch++){
 
         x->new_epoch();
 
@@ -60,8 +71,8 @@ void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate
             std::vector<Data> batch_data = x->get_batch(batch_size);
 
             // TODO: move this to the layer class
-            std::fill(this->layers[1]->grad.begin(), this->layers[1]->grad.end(), std::vector<float>(this->layers[1]->output[0].size(), 0));
-            std::fill(this->layers[2]->grad.begin(), this->layers[2]->grad.end(), std::vector<float>(this->layers[2]->output[0].size(), 0));
+            std::fill(this->layers[1]->weight_gradients.begin(), this->layers[1]->weight_gradients.end(), std::vector<float>(this->layers[1]->output[0].size(), 0));
+            std::fill(this->layers[2]->weight_gradients.begin(), this->layers[2]->weight_gradients.end(), std::vector<float>(this->layers[2]->output[0].size(), 0));
 
             std::vector<std::vector<float> > batch_inputs(batch_size, std::vector<float>(batch_data.size(), 0));
             
@@ -81,12 +92,13 @@ void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate
             for(int j=0; j<mse.size(); j++){
                 tot_mse += mse[j];
             }
+
             
             // calculate delta for last layer
             for(int batch = 0; batch<result.size(); batch++){
                 for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
                     for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
-                        this->layers[2]->grad[perceptron][weight] += (target[batch][perceptron] - result[batch][perceptron]) * result[batch][perceptron] * (1 - result[batch][perceptron]) * this->layers[1]->output[batch][weight];
+                        this->layers[2]->weight_gradients[perceptron][weight] += (target[batch][perceptron] - result[batch][perceptron]) * result[batch][perceptron] * (1 - result[batch][perceptron]) * this->layers[1]->output[batch][weight];
                     }
                 }
             }
@@ -99,7 +111,7 @@ void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate
                         for(int perceptron2 = 0; perceptron2 < this->layers[2]->weights.size(); perceptron2++){
                             eo1_net01 += (target[batch][perceptron2] - result[batch][perceptron2]) * result[batch][perceptron2] * (1 - result[batch][perceptron2]) * this->layers[2]->weights[perceptron2][perceptron];
                         }
-                        this->layers[1]->grad[perceptron][weight] += eo1_net01 * 1 * batch_inputs[batch][weight];
+                        this->layers[1]->weight_gradients[perceptron][weight] += eo1_net01 * 1 * batch_inputs[batch][weight];
                     }
                 }
             }
@@ -124,17 +136,17 @@ void Model::train(DataLoader *x, int epochs, int batch_size, float learning_rate
         for(int perceptron = 0; perceptron < this->layers[2]->weights.size(); perceptron++){
             for(int weight = 0; weight < this->layers[2]->weights[perceptron].size(); weight++){
                 // average the gradient for the minibatch, and for the results 
-                this->layers[2]->weights[perceptron][weight] += (learning_rate * this->layers[2]->grad[perceptron][weight]) / (batch_size * steps);
+                this->layers[2]->weights[perceptron][weight] += (learning_rate * this->layers[2]->weight_gradients[perceptron][weight]) / (batch_size * steps);
             }
         }
         // update weights for second last layer
         for(int perceptron = 0; perceptron < this->layers[1]->weights.size(); perceptron++){
             for(int weight = 0; weight < this->layers[1]->weights[perceptron].size(); weight++){
-                this->layers[1]->weights[perceptron][weight] += (learning_rate * this->layers[1]->grad[perceptron][weight]) / (batch_size * steps);
+                this->layers[1]->weights[perceptron][weight] += (learning_rate * this->layers[1]->weight_gradients[perceptron][weight]) / (batch_size * steps);
             }
         }
 
-        if(checkpoints_path != ""){
+        if(checkpoints_root != ""){
             char *checkpoint_file_name = new char[checkpoint_file_name_template.size() + 10];
             std::sprintf(checkpoint_file_name, checkpoint_file_name_template.c_str(), epoch);
             this->save(checkpoint_file_name);
@@ -200,7 +212,7 @@ void Model::save(std::string filename){
     std::string model_weights_filename = filename + ".weights";
 
     FILE *model_description_file = std::fopen(model_description_filename.c_str(), "w+");
-    if(model_description_file == NULL){
+    if(model_description_file == nullptr){
         std::printf("Error: Could not open file %s\n", model_description_filename.c_str());
         return;
     }
@@ -213,31 +225,38 @@ void Model::save(std::string filename){
     int layer_id = 0;
     for(Layer *layer : this->layers){
         
-        LayerSummary s = layer->get_summary();
+        LayerInfo info = layer->get_info();
 
         std::sprintf(
             tmp_str_buffer,
             "\"%s_%d\": {"
                 "\"layer_name\": \"%s\","
-                "\"activation_fn\": \"%s\","
-                "\"output_size\": %d,"
-                "\"param_count\": %d,"
+                "\"activation_fn_name\": \"%s\","
+                "\"input_neurons\": %d,"
+                "\"output_neurons\": %d,"
+                "\"param_count\": %ld,"
                 "\"parameters\": {"
-                    "\"weights\": [%ld, %ld],"
-                    "\"weights_bytes\": %ld,"
-                    "\"biases\": %d,"
-                    "\"biases_bytes\": %d"
+                    "\"weights_count\": %d,"
+                    "\"weights_shape\": [%d, %d],"
+                    "\"weight_bytes_count\": %ld,"
+                    "\"biases_count\": %d,"
+                    "\"biases_shape\": [%d],"
+                    "\"bias_bytes_count\": %ld"
                 "}"
             "},", 
-            s.layer_name.c_str(), layer_id++, 
-            s.layer_name.c_str(), 
-            s.activation_fn.c_str(),
-            s.output_size, 
-            s.param_count, 
-            (!s.layer_name.compare("input")) ? 0 : layer->weights.size(), (!s.layer_name.compare("input")) ? 0 : layer->weights[0].size(), 
-            (!s.layer_name.compare("input")) ? 0 : layer->weights.size() * layer->weights[0].size() * sizeof(float),
-            0,
-            0);
+            info.layer_name.c_str(), layer_id++, 
+            info.layer_name.c_str(), 
+            info.activation_fn_name.c_str(),
+            info.input_neurons, 
+            info.output_neurons,
+            info.param_count,
+            info.weights_count,
+            info.output_neurons, info.input_neurons,
+            info.weight_bytes_count,
+            info.biases_count,
+            info.output_neurons,
+            info.bias_bytes_count
+            );
         model_description += tmp_str_buffer;
     }
 
@@ -248,7 +267,7 @@ void Model::save(std::string filename){
 
     // write weights to binary file
     FILE *model_weights_file = std::fopen(model_weights_filename.c_str(), "wb+");
-    if(model_weights_file == NULL){
+    if(model_weights_file == nullptr){
         std::printf("Error: Could not open file %s\n", model_weights_filename.c_str());
         return;
     }
@@ -257,7 +276,9 @@ void Model::save(std::string filename){
         for(int i=0; i<layer->weights.size(); i++){
             std::fwrite(layer->weights[i].data(), sizeof(float), layer->weights[i].size(), model_weights_file);
         }
-        // TODO write biases too
+        
+        std::fwrite(layer->biases.data(), sizeof(float), layer->biases.size(), model_weights_file);
+        
     }
 
     std::fclose(model_weights_file);
@@ -269,26 +290,31 @@ void Model::summary(){
     std::printf("------------------------------------------\n");
     float trainable_param_count = 0;
     for(int i=0; i<this->layers.size(); i++){
-        LayerSummary summary = this->layers[i]->get_summary();
-        std::string layer_name = summary.layer_name + "_" + std::to_string(i);
-        std::string output_size = "(" + std::to_string(summary.batch_size) + ", " + std::to_string(summary.output_size) + ")";
-        std::printf("%-10s%-10s%d\n", layer_name.c_str(), output_size.c_str(), summary.param_count);
-        trainable_param_count += summary.param_count;
+        LayerInfo info = this->layers[i]->get_info();
+        std::string layer_name = info.layer_name + "_" + std::to_string(i);
+        std::string output_size = "( , " + std::to_string(info.output_neurons) + ")";
+        std::printf("%-10s%-10s%ld\n", layer_name.c_str(), output_size.c_str(), info.param_count);
+        trainable_param_count += info.param_count;
     }
     std::printf("------------------------------------------\n");
     std::printf("Total trainable parameters: %d\n", (int)trainable_param_count);
 }
 
-void Model::compile(){
+void Model::initialize(){
     this->layers[1]->initialize(this->input_size);
     for(int i=2; i<this->layers.size(); i++){
         this->layers[i]->initialize(this->layers[i-1]->output[0].size());
     }
 
     this->layers_count = this->layers.size();
+    this->is_initialized = true;
 }
 
 Layer* Model::operator[](int index){
+    if(index >= this->layers.size()){
+        std::printf("Error: Index out of bounds, index %d, layers count %ld\n", index, this->layers.size());
+        throw std::out_of_range("Index out of bounds");
+    }
     return this->layers[index];
 }
 
@@ -301,7 +327,7 @@ Model Model::from_json(std::string filename){
     }
     
     Model model = ModelLoader::loadJson(filename);
-    model.compile();
+    model.initialize();
     return model;
 }
 
@@ -337,6 +363,6 @@ Model Model::from_checkpoint(const std::string json_filename, const std::string 
 
     Model model = ModelLoader::loadJson(json_filename);
     ModelLoader::loadWeights(weights_filename, model);
-    model.compile();
+    model.initialize();
     return model;
 }

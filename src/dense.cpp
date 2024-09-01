@@ -5,76 +5,72 @@
 
 
 Dense::Dense(int output_size, ActivationFn *activation){
-    this->summary.layer_name = "dense";
-    this->summary.activation_fn = activation->name;
-    this->summary.output_size = output_size;
-    this->activation = activation;
+    this->type = LayerType::DENSE;
+    this->info.layer_name = LAYER_NAMES[this->type];
+    this->activation = (activation == nullptr) ? new None() : activation;
+    this->info.activation_fn_name = this->activation->get_name();
+    this->info.output_neurons = output_size;
+    
+
+    this->is_initialized = false;
 }
 
 void Dense::initialize(int input_size){
-    this->summary.input_size = input_size;
-    this->summary.batch_size = 1;
-    this->summary.param_count = input_size*summary.output_size + summary.output_size;
-    this->summary.param_size = this->summary.param_count*sizeof(float); 
+    this->info.input_neurons = input_size;
+    this->info.weights_count = input_size * this->info.output_neurons;
+    this->info.biases_count = this->info.output_neurons;
+    this->info.param_count = this->info.weights_count + this->info.biases_count;
+
+    this->info.weight_bytes_count = this->info.param_count*sizeof(float); 
+    this->info.bias_bytes_count = this->info.biases_count*sizeof(float);
 
     this->weights = std::vector<std::vector<float> >(
-        summary.output_size, 
-        std::vector<float>(input_size, 0)
+        this->info.output_neurons,
+        std::vector<float>(this->info.input_neurons, 0)
     );
-    glorot_uniform(&this->weights, input_size, this->summary.output_size);
-    
-    this->grad = std::vector<std::vector<float> >(
-        summary.output_size, 
-        std::vector<float>(input_size, 0)
+    glorot_uniform(&this->weights, this->info.input_neurons, this->info.output_neurons);
+
+    // Creates a matrix of size (output_neurons x input_neurons)
+    this->weight_gradients = std::vector<std::vector<float> >(
+        this->info.output_neurons, 
+        std::vector<float>(this->info.input_neurons, 0)
     );
 
-    this->bias = std::vector<float>(summary.output_size, 0);
+    this->biases = std::vector<float>(this->info.output_neurons, 0);
     
-    this->output = std::vector<std::vector<float> >(1, std::vector<float>(summary.output_size, 0));
+    this->output = std::vector<std::vector<float> >(1, std::vector<float>(this->info.output_neurons, 0));
 
-    this->initialized = true;
+    this->is_initialized = true;
 }
 
 void Dense::forward(std::vector<std::vector<float> > *input){
 
-    // Check if input size matches output size, if not, 
-    // output size has to be changed to match the current run
-    if(input->size() != this->summary.batch_size){
-        this->summary.batch_size = input->size();
-        this->output = std::vector<std::vector<float> >(this->summary.batch_size, std::vector<float>(this->summary.output_size, 0));
+    if(input->size() != this->output.size()){
+        // Resize output to match input batch size
+        this->output = std::vector<std::vector<float> >(input->size(), std::vector<float>(this->info.output_neurons, 0));
     }
 
-    for(int batch = 0; batch < this->summary.batch_size; batch++){
-        for(int perceptron = 0; perceptron < this->weights.size(); perceptron++){
-            for(int w_id = 0; w_id < this->summary.input_size; w_id++){
+    for(int batch = 0; batch < input->size(); batch++){
+        for(int perceptron = 0; perceptron < this->info.output_neurons; perceptron++){
+            for(int w_id = 0; w_id < this->weights[perceptron].size(); w_id++){
                 this->output[batch][perceptron] += input->at(batch)[w_id] * this->weights[perceptron][w_id];
             }
 
-            this->output[batch][perceptron] += this->bias[perceptron];
+            this->output[batch][perceptron] += this->biases[perceptron];
         }
 
-        if(this->activation != NULL){
+        if(this->activation != nullptr){
             this->activation->forward(&this->output[batch]);
         }
     }
 }
 
-LayerSummary Dense::get_summary(){
-    return this->summary;
+LayerInfo Dense::get_info(){
+    return this->info;
 }
 
 void Dense::backward(std::vector<std::vector<float> > *grads){
 
-    for(int batch = 0; batch < this->summary.batch_size; batch++){
-        for(int perceptron = 0; perceptron < this->summary.output_size; perceptron++){
-            // std::printf("Perceptron: %d\n", perceptron);
-            for(int w_id = 0; w_id < this->summary.input_size; w_id++){
-                this->grad[batch][w_id] += grads->at(batch)[perceptron] * this->weights[perceptron][w_id];
-                this->weights[perceptron][w_id] += grads->at(batch)[perceptron] * this->output[batch][perceptron];
-            }
-
-            this->bias[perceptron] += grads->at(batch)[perceptron];
-        }
-    }
+    // TODO: Implement backpropagation
 
 }

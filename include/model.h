@@ -50,8 +50,8 @@ class Model{
 
         std::vector<std::vector<float> > forward(std::vector<std::vector<float> > *input);
         void summary();
-        void compile();
-        void train(DataLoader *x, int epochs, int batch_size, float learning_rate, std::string checkpoints_path = nullptr);
+        void initialize();
+        void train(DataLoader *x, int epochs, int batch_size, float learning_rate, std::string checkpoints_path = nullptr, int from_epoch = 0);
         void save(std::string filename);        
         std::vector<float> mse(std::vector<std::vector<float> > v1, std::vector<std::vector<float> > v2);
 
@@ -60,8 +60,9 @@ class Model{
     private:
         std::vector<Layer*> layers;
         int input_size;
-        bool is_compiled;
+        bool is_initialized = false;
         std::vector<float> _get_one_hot(int label, int size);
+        void _check_initialized();
 
 };
 

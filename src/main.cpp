@@ -14,7 +14,7 @@
 
 void test_model(){
     Model latest_model = Model::from_checkpoint("../checkpoints/mnist/ckpt_epoch_10");
-    latest_model.compile();
+    latest_model.initialize();
     
     DataLoader *mnist_dataset = new MNISTDataLoader("../examples", 0.01, true);
     mnist_dataset->load();
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
 
     Data input_sample = mnist_dataset.get_sample();
 
-    model.compile();
+    model.initialize();
     model.summary();
     std::vector<std::vector<float> > result = model.forward(new std::vector<std::vector<float> >(1, input_sample.input));
     std::printf("Expected label: %d\n", input_sample.label);
