@@ -6,11 +6,11 @@
 #include <cmath>
 #include <string> // Add this line to include the <string> header
 
-#include "model.h"
-#include "layers.h"
-#include "activation.h"
-#include "initialization.h"
-#include "data_loader.h"
+#include "model/model.h"
+#include "model/layers/layers.h"
+#include "model/layers/activation.h"
+#include "model/initialization.h"
+#include "model/data_loader.h"
 
 void test_model(){
     Model latest_model = Model::from_checkpoint("../checkpoints/mnist/ckpt_epoch_10");
@@ -29,7 +29,38 @@ void test_model(){
     for(int j=0; j<test[0].size(); j++){
         std::printf("\tProb %d -> %f %% \n", j, test[0][j]*100);
     }
+}
 
+void test_pt_weights(){
+    Model model = Model();
+    model.add(new Input(784));
+    model.add(new Dense(128, new ReLU())); //128, relu
+    model.add(new Dense(10, new Sigmoid())); //10, softmax
+
+    model.initialize();
+    model.load_weights("../examples/mnist_fc128_relu_fc10_sigmoid_float32.weights");
+    model.summary();
+
+    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);
+    mnist_dataset.load();
+
+    Data sample = mnist_dataset.get_sample_for_label(9);
+    std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
+    for(int i=0; i<sample.input.size(); i++){
+        sample_input[0][i] = sample.input[i];
+    }
+
+    std::vector<std::vector<float> > test = model.forward(&sample_input);
+
+    std::printf("Expected label: %d\n", sample.label);
+    for(int j=0; j<test[0].size(); j++){
+        std::printf("\tProb %d -> %f %% \n", j, test[0][j]*100);
+    }
+
+    Layer *layer = model[1];
+
+    std::printf("Weight FC1 [127][783] = %.18f\n", layer->weights[127][783]);
+    std::printf("Bias FC1 [127] = %.18f\n", layer->biases[127]);
 }
 
 
@@ -40,7 +71,7 @@ int main(int argc, char* argv[]){
         std::printf("Arg %d: %s\n", i, argv[i]);
     }
 
-    test_model();
+    test_pt_weights();
     return 0;
 
     MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);

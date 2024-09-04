@@ -55,6 +55,8 @@ class Model{
         void save(std::string filename);        
         std::vector<float> mse(std::vector<std::vector<float> > v1, std::vector<std::vector<float> > v2);
 
+        void load_weights(std::string filename);
+
         Layer* operator[](int index);
 
     private:

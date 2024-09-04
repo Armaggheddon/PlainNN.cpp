@@ -5,7 +5,6 @@
 #include <string>
 #include "activation.h"
 
-
 enum LayerType{
     INPUT = 0,
     DENSE = 1

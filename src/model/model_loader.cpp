@@ -18,6 +18,7 @@ Model ModelLoader::loadJson(const std::string& path){
     while (std::getline(file, line)) {
         lines += line;
     }
+    file.close();
 
     // parse the json
     struct json_value_s* root = json_parse(lines.c_str(), lines.size());
@@ -129,9 +130,10 @@ void ModelLoader::loadWeights(const std::string& path, Model& model){
     // read the binary file parsing the weights and biases for each layer
     std::ifstream file(path, std::ios::binary);
     if(!file.is_open()){
-        throw std::runtime_error("Failed to open file");
+        throw std::runtime_error("Failed to open file " + path);
     }
 
+    int param_load_count = 0;
     for(int i=1; i<model.layers_count; i++){
         Layer* layer = model[i];
 
@@ -139,25 +141,43 @@ void ModelLoader::loadWeights(const std::string& path, Model& model){
 
         int weights_size = info.param_count;
 
-        char float_buff[sizeof(float)];
-        char biases_buff[sizeof(float) * info.output_neurons];
         for(int out = 0; out < info.output_neurons; out++){
             for(int in = 0; in < info.input_neurons; in++){
-                file.read(float_buff, sizeof(float_buff));
-                float weight;
-                memcpy(&weight, float_buff, sizeof(float_buff));
+                float weight = 0.0;
+                file.read(reinterpret_cast<char*>(&weight), sizeof(float));
                 layer->weights[out][in] = weight;
+                param_load_count++;
             }
         }
         std::printf("Loaded weights for layer %s: (%d, %d)\n", 
             info.layer_name.c_str(), 
-            info.input_neurons, 
-            info.output_neurons);
+            info.output_neurons, 
+            info.input_neurons);
 
-        file.read(biases_buff, sizeof(biases_buff));
-        memcpy(layer->biases.data(), biases_buff, sizeof(biases_buff));
+        for(int out = 0; out < info.output_neurons; out++){
+            float bias = 0.0;
+            file.read(reinterpret_cast<char*>(&bias), sizeof(float));
+            layer->biases[out] = bias;
+            param_load_count++;
+        }
 
         std::printf("Loaded biases for layer %s: (%d)\n", info.layer_name.c_str(), info.output_neurons);
     }
+
+    std::printf("Loaded %d parameters\n", param_load_count);
+    if(file.eof()){
+        std::printf("End of file reached\n");
+    }
+    else{
+        int missing_bytes = 0;
+        while(!file.eof()){
+            float f;
+            file.read(reinterpret_cast<char*>(&f), sizeof(float));
+            missing_bytes++;
+        }
+        std::printf("Missing %d bytes = %f floats\n", missing_bytes, missing_bytes/4.0f);
+    }
+    
+    file.close();
 
 }

@@ -366,3 +366,7 @@ Model Model::from_checkpoint(const std::string json_filename, const std::string 
     model.initialize();
     return model;
 }
+
+void Model::load_weights(std::string filename){
+    ModelLoader::loadWeights(filename, *this);
+}

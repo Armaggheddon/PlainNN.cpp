@@ -6,19 +6,21 @@ project(mnist_cpp VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# include_directories(${CMAKE_SOURCE_DIR}/include)
 
-set(SOURCES
-    src/main.cpp
-    src/activation.cpp
-    src/initialization.cpp
-    src/input.cpp
-    src/dense.cpp
-    src/none.cpp
-    src/model.cpp
-    src/MNISTDataLoader.cpp
-    src/model_loader.cpp
-)
+# GLOB all subdirectories inside include
+
+# include_directories(${CMAKE_SOURCE_DIR}/include)
+
+# GLOB all subdirectories inside src
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+# set(GLOB_RECURSE INCLUDES ${PROJECT_SOURCE_DIR}/include/*.h)
+
+# set(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(mnist_cpp ${SOURCES})
-
+# target_include_directories(mnist_cpp PRIVATE ${INCLUDES})
 target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/stb_image)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model/layers)
