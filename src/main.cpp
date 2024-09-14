@@ -1,117 +1,37 @@
-#include <cstdio>
-#include <bits/stdc++.h>
-#include <typeinfo>
-#include <type_traits>
+#include <iostream>
 #include <vector>
+#include <ctime>
 #include <cmath>
-#include <string> // Add this line to include the <string> header
+#include <fstream>
+#include "model.h"
+#include "layers.h"
+#include "activation_fncs.h"
+#include "data_loaders.h"
 
-#include "model/model.h"
-#include "model/layers/layers.h"
-#include "model/layers/activation.h"
-#include "model/initialization.h"
-#include "model/data_loader.h"
 
-void test_model(){
-    Model latest_model = Model::from_checkpoint("../checkpoints/mnist/ckpt_epoch_10");
-    latest_model.initialize();
+int main(){
+
+    Model model;
+    model.add_layer(new Input(784));
+    model.add_layer(new Dense(128, new ReLU()));
+    model.add_layer(new Dense(10, new Sigmoid()));
+
+    MNISTDataLoader train_dataloader("../test/train-images-idx3-ubyte", "../test/train-labels-idx1-ubyte", true, true);
+    train_dataloader.load();
     
-    DataLoader *mnist_dataset = new MNISTDataLoader("../examples", 0.01, true);
-    mnist_dataset->load();
-    Data sample = mnist_dataset->get_sample_for_label(0);
-
-    std::vector<std::vector<float> > sample_input;
-    sample_input.push_back(sample.input);
-
-    std::vector<std::vector<float> > test = latest_model.forward(&sample_input);
-
-    std::printf("Expected label: %d\n", sample.label);
-    for(int j=0; j<test[0].size(); j++){
-        std::printf("\tProb %d -> %f %% \n", j, test[0][j]*100);
-    }
-}
-
-void test_pt_weights(){
-    Model model = Model();
-    model.add(new Input(784));
-    model.add(new Dense(128, new ReLU())); //128, relu
-    model.add(new Dense(10, new Sigmoid())); //10, softmax
-
-    model.initialize();
-    model.load_weights("../examples/mnist_fc128_relu_fc10_sigmoid_float32.weights");
+    MNISTDataLoader test_dataloader("../test/t10k-images-idx3-ubyte", "../test/t10k-labels-idx1-ubyte", true, true);
+    test_dataloader.load();
+    
     model.summary();
 
-    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);
-    mnist_dataset.load();
+    model.load_weights("../test/model_save.weights");
 
-    Data sample = mnist_dataset.get_sample_for_label(9);
-    std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
-    for(int i=0; i<sample.input.size(); i++){
-        sample_input[0][i] = sample.input[i];
-    }
+    model.evaluate(test_dataloader);
+    
+    model.train(train_dataloader, test_dataloader, 0.01, 1, 64);
 
-    std::vector<std::vector<float> > test = model.forward(&sample_input);
-
-    std::printf("Expected label: %d\n", sample.label);
-    for(int j=0; j<test[0].size(); j++){
-        std::printf("\tProb %d -> %f %% \n", j, test[0][j]*100);
-    }
-
-    Layer *layer = model[1];
-
-    std::printf("Weight FC1 [127][783] = %.18f\n", layer->weights[127][783]);
-    std::printf("Bias FC1 [127] = %.18f\n", layer->biases[127]);
-}
+    // model.save_weights("../test/model_save.weights");
 
 
-int main(int argc, char* argv[]){
-
-
-    for(int i=0; i<argc; i++){
-        std::printf("Arg %d: %s\n", i, argv[i]);
-    }
-
-    test_pt_weights();
     return 0;
-
-    MNISTDataLoader mnist_dataset = MNISTDataLoader("../examples", 0.01, true);
-    mnist_dataset.load();
-    mnist_dataset.shuffle();
-
-
-    Model model = Model();
-
-    // model.load("../checkpoints/mnist/ckpt_epoch_0");
-
-    model.add(new Input(784));
-    model.add(new Dense(128, new ReLU())); //128, relu
-    model.add(new Dense(10, new Softmax())); //10, softmax
-
-    Data input_sample = mnist_dataset.get_sample();
-
-    model.initialize();
-    model.summary();
-    std::vector<std::vector<float> > result = model.forward(new std::vector<std::vector<float> >(1, input_sample.input));
-    std::printf("Expected label: %d\n", input_sample.label);
-    for(int i=0; i<result.size(); i++){
-        std::printf("Batch[%d]:\n", i);
-        for(int j=0; j<result[i].size(); j++){
-            std::printf("\tProb %d -> %f %% \n", j, result[i][j]*100);
-        }
-    }
-
-    model.train(&mnist_dataset, 20, 64, 0.2, "../checkpoints/mnist");
-
-    Data sample = mnist_dataset.get_sample();
-    std::vector<std::vector<float> > sample_input(1, std::vector<float>(784, 0));
-    for(int i=0; i<sample.input.size(); i++){
-        sample_input[0][i] = sample.input[i];
-    }
-
-    std::vector<std::vector<float> > test = model.forward(&sample_input);
-    
-    std::printf("Expected label: %d\n", sample.label);
-    for(int j=0; j<result[0].size(); j++){
-        std::printf("\tProb %d -> %f %% \n", j, result[0][j]*100);
-    }
 }

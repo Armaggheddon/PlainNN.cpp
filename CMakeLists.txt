@@ -6,21 +6,30 @@ project(mnist_cpp VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# include_directories(${CMAKE_SOURCE_DIR}/include)
+# Find OpenMP
+find_package(OpenMP)
 
-# GLOB all subdirectories inside include
+if(OpenMp_FOUND)
+    message(STATUS "OpenMP found")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+else()
+    message(STATUS "OpenMP not found")
+endif()
 
-# include_directories(${CMAKE_SOURCE_DIR}/include)
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # GLOB all subdirectories inside src
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-# set(GLOB_RECURSE INCLUDES ${PROJECT_SOURCE_DIR}/include/*.h)
-
-# set(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(mnist_cpp ${SOURCES})
-# target_include_directories(mnist_cpp PRIVATE ${INCLUDES})
+# set output directory for mnist_cpp to bin folder
+# set_target_properties(mnist_cpp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/stb_image)
-target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model)
-target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model/layers)
+
+enable_testing()
+add_subdirectory(${PROJECT_SOURCE_DIR}/test)

@@ -7,10 +7,12 @@ Compile with
 1. ./mnist_cpp
 
 ## Dataset
-Download mnist in csv format from https://www.kaggle.com/datasets/oddrationale/mnist-in-csv and save them in the examples folder
+Download the dataset from:
+- https://github.com/fgnt/mnist
 
 ## Useful links
 - [How the backpropagation algorithm works](http://neuralnetworksanddeeplearning.com/chap2.html)
+
 
 ## Uses 
 - json.h from https://github.com/sheredom/json.h/tree/master
