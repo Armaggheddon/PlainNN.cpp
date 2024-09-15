@@ -4,10 +4,10 @@
 #include <fstream>
 #include <algorithm>
 #include <random>
+#include <memory>
 
-
-std::vector<double> one_hot_encode(int label_idx, int num_classes){
-    std::vector<double> one_hot(num_classes, 0);
+Tensor one_hot_encode(int label_idx, int num_classes){
+    Tensor one_hot({num_classes});
     one_hot[label_idx] = 1;
     return one_hot;
 }
@@ -33,29 +33,38 @@ MNISTDataLoader::MNISTDataLoader(
 }
 
 int MNISTDataLoader::steps_per_epoch(int batch_size){
+
+    if(batch_size <= 0){
+        std::cerr << "Batch size must be greater than 0" << std::endl;
+        return m_dataset.size(); // TODO raise error
+    }
+
     if(m_drop_last)
         return m_dataset.size() / batch_size;
     else
         return (m_dataset.size() + batch_size - 1) / batch_size;
 }
 
-BatchData<std::vector<double> > MNISTDataLoader::get_batch(int batch_size){
+BatchData MNISTDataLoader::get_batch(int batch_size){
     if(m_offset + batch_size > m_dataset.size() && m_drop_last){
         new_epoch();
-        return BatchData<std::vector<double> >();
+        return BatchData();
     }
 
-    BatchData<std::vector<double> > batch;
-    for(int i = m_offset; i < m_offset + batch_size; i++){
-        batch.input_data.push_back(m_dataset[i].data);
-        batch.targets_idx.push_back(m_dataset[i].target);
-        batch.targets_one_hot.push_back(
+    BatchData batch;
+
+    for(int i = m_offset, count = 0; i < m_offset + batch_size; i++, count++){
+        
+        batch.input_data.emplace_back(m_dataset[i].data);
+
+        batch.targets_idx.emplace_back(m_dataset[i].target);
+        batch.targets_one_hot.emplace_back(
             one_hot_encode(m_dataset[i].target, 10)
         );
     }
 
     m_offset += batch_size;
-
+    
     return batch;
 }
 
@@ -65,15 +74,13 @@ void MNISTDataLoader::new_epoch(){
         shuffle();
 }
 
-void MNISTDataLoader::shuffle(){
-
-    std::shuffle(m_dataset.begin(), m_dataset.end(), rng);
-}
-
-
 void MNISTDataLoader::load(){
     load_data();
     load_labels();
+}
+
+void MNISTDataLoader::shuffle(){
+    std::shuffle(m_dataset.begin(), m_dataset.end(), rng);
 }
 
 void MNISTDataLoader::load_data(){
@@ -102,10 +109,11 @@ void MNISTDataLoader::load_data(){
         m_dataset.resize(number_of_images);
 
     for(int i=0; i<number_of_images; i++){
+        m_dataset[i].data = Tensor({rows*cols});
         for(int j=0; j<rows*cols; j++){
             unsigned char pixel = 0;
             data_file.read(reinterpret_cast<char*>(&pixel), sizeof(pixel));
-            m_dataset[i].data.push_back(static_cast<double>(pixel) / 255.0);
+            m_dataset[i].data[j] = (static_cast<double>(pixel) / 255.0);
         }
     }
 

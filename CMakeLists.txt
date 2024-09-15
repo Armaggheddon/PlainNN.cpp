@@ -6,14 +6,22 @@ project(mnist_cpp VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+
+# if(NOT CMAKE_BUILD_TYPE)
+#     set(CMAKE_BUILD_TYPE Release)
+# endif()
+
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+# set(CMAKE_CXX_FLAGS_DEBUG "-g")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+
 # Find OpenMP
 find_package(OpenMP)
 
-if(OpenMp_FOUND)
+if(OpenMp_CXX_FOUND)
     message(STATUS "OpenMP found")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    target_link_libraries(mnist_cpp PUBLIC OpenMP::OpenMP_CXX)
 else()
     message(STATUS "OpenMP not found")
 endif()
