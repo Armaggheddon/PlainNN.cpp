@@ -1,5 +1,5 @@
-#ifndef TENSOR_H
-#define TENSOR_H
+#ifndef MODEL_TENSOR_H
+#define MODEL_TENSOR_H
 
 #include <vector>
 #include <initializer_list>
@@ -30,4 +30,4 @@ struct Tensor{
         std::vector<double> m_data;
 };
 
-#endif // TENSOR_H
+#endif // MODEL_TENSOR_H

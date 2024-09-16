@@ -1,4 +1,4 @@
-#include "relu.h"
+#include "activation_fncs.h"
 
 ReLU::ReLU(){
     this->fn_type = ActivationType::RELU;

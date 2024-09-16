@@ -1,9 +1,7 @@
 #include "model.h"
 
-#include "layer.h"
-#include "layers/dense.h"
-#include "layers/input.h"
-#include "data_loader.h"
+#include "layers.h"
+#include "data_loaders.h"
 
 #include <vector>
 #include <chrono>

@@ -1,9 +1,9 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MODELS_MODEL_H
+#define MODELS_MODEL_H
 
-#include "layer.h"
-#include "schedulers/lr_scheduler.h"
-#include "data_loader.h"
+#include "layers.h"
+#include "lr_scheduler.h"
+#include "data_loaders.h"
 #include <vector>
 #include <chrono>
 
@@ -66,4 +66,4 @@ class Model{
         void make_duration_readable(const std::chrono::duration<double>& duration, char* buff);
 };
 
-#endif // MODEL_H
+#endif // MODELS_MODEL_H

@@ -1,4 +1,4 @@
-#include "model/schedulers/lr_scheduler.h"
+#include "lr_scheduler.h"
 
 StepLR::StepLR(double gamma, int step_size){
     this->gamma = gamma;

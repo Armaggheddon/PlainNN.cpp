@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <initializer_list>
 
-#include "input.h"
+#include "layers.h"
 #include "tensor.h"
 
 Input::Input(std::initializer_list<int> shape){

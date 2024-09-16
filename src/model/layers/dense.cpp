@@ -1,5 +1,5 @@
-#include "dense.h"
-#include "activation_fnc.h"
+#include "layers.h"
+#include "activation_fncs.h"
 
 #include <vector>
 

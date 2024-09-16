@@ -1,10 +1,35 @@
-#ifndef MNIST_DATALOADER_H
-#define MNIST_DATALOADER_H
+#ifndef MODEL_DATA_LOADERS_H
+#define MODEL_DATA_LOADERS_H
 
-#include "data_loader.h"
+#include "tensor.h"
 #include <vector>
-#include <random>
+#include <memory>
 #include <string>
+#include <random>
+
+
+struct DatasetItem{
+    Tensor data;
+    int target;
+};
+
+struct BatchData{
+    std::vector<Tensor> input_data;
+    std::vector<Tensor> targets_one_hot;
+    std::vector<int> targets_idx;
+};
+
+Tensor one_hot_encode(int label_idx, int num_classes);
+
+class DataLoader{
+    public:
+        virtual void load() = 0;
+        virtual BatchData get_batch(int batch_size) = 0;
+        virtual void new_epoch() = 0;
+        virtual int num_classes() = 0;
+        virtual void shuffle() = 0;
+        virtual int steps_per_epoch(int batch_size) = 0;
+};
 
 class MNISTDataLoader : public DataLoader{
     public:
@@ -35,5 +60,4 @@ class MNISTDataLoader : public DataLoader{
         void load_labels();
 };
 
-
-#endif // MNIST_DATALOADER_H
+#endif // MODEL_DATA_LOADERS_H

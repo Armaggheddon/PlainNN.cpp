@@ -1,5 +1,5 @@
-#ifndef ACTIVATION_FNC_H
-#define ACTIVATION_FNC_H
+#ifndef MODEL_LAYERS_ACTIVATION_FNC_H
+#define MODEL_LAYERS_ACTIVATION_FNC_H
 
 #include <cmath>
 #include <string>
@@ -8,12 +8,14 @@ enum ActivationType{
     NONE,
     RELU,
     SIGMOID,
+    SOFTMAX
 };
 
 const std::string ACTIVATION_NAMES[] = {
     "None",
     "ReLU",
-    "Sigmoid"
+    "Sigmoid",
+    "Softmax"
 };
 
 class ActivationFn{
@@ -30,4 +32,23 @@ class ActivationFn{
 };
 
 
-#endif // ACTIVATION_FNC_H
+class ReLU : public ActivationFn{
+    public:
+        ReLU();
+
+        double forward(const double input);
+
+        double backward(const double input);
+};
+
+
+class Sigmoid : public ActivationFn{
+    public:
+        Sigmoid();
+
+        double forward(const double input);
+
+        double backward(const double input);
+};
+
+#endif // MODEL_LAYERS_ACTIVATION_FNC_H

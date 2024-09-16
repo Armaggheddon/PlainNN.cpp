@@ -1,11 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include "model.h"
-#include "layers/input.h"
-#include "layers/dense.h"
-#include "layers/activation_fncs/relu.h"
-#include "layers/activation_fncs/sigmoid.h"
-#include "data_loaders/mnist_dataloader.h"
+#include "layers.h"
+#include "data_loaders.h"
+#include "lr_scheduler.h"
+#include "activation_fncs.h"
 
 
 int main(){

@@ -1,4 +1,4 @@
-#include "sigmoid.h"
+#include "activation_fncs.h"
 
 #include <cmath>
 

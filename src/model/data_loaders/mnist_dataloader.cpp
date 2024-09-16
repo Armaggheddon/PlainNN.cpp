@@ -1,4 +1,4 @@
-#include "mnist_dataloader.h"
+#include "data_loaders.h"
 
 #include <iostream>
 #include <fstream>

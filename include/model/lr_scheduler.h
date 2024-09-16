@@ -1,5 +1,5 @@
-#ifndef LR_SCHEDULER_H
-#define LR_SCHEDULER_H
+#ifndef MODEL_LR_SCHEDULER_H
+#define MODEL_LR_SCHEDULER_H
 
 class LRScheduler{
     public:
@@ -19,4 +19,4 @@ class StepLR : public LRScheduler{
         int step_size;
 };
 
-#endif // LR_SCHEDULER_H
+#endif // MODEL_LR_SCHEDULER_H

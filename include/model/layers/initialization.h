@@ -1,5 +1,5 @@
-#ifndef INITIALIZATION_H
-#define INITIALIZATION_H
+#ifndef MODEL_LAYERS_INITIALIZATION_H
+#define MODEL_LAYERS_INITIALIZATION_H
 
 #include <ctime>
 #include <random>
@@ -15,4 +15,4 @@ class GolorotInitialization{
         );
 };
 
-#endif // INITIALIZATION_H
+#endif // MODEL_LAYERS_INITIALIZATION_H
