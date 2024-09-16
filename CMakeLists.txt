@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
-# if(NOT CMAKE_BUILD_TYPE)
-#     set(CMAKE_BUILD_TYPE Release)
-# endif()
+if(CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
-# set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-# set(CMAKE_CXX_FLAGS_DEBUG "-g")
-# set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
 # Find OpenMP
@@ -38,6 +38,11 @@ add_executable(mnist_cpp ${SOURCES})
 # set_target_properties(mnist_cpp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/stb_image)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model/data_loaders)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model/layers)
+target_include_directories(mnist_cpp PRIVATE ${PROJECT_SOURCE_DIR}/include/model/layers/activation_fncs)
+
 
 enable_testing()
 add_subdirectory(${PROJECT_SOURCE_DIR}/test)
