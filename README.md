@@ -3,6 +3,8 @@ Compile with
 1. mkdir -p build
 1. cd build
 1. cmake ..
+    optionally build with optimizations enable with 
+    cmake -DCMAKE_BUILD_TYPE=Release .. 
 1. make
 1. ./mnist_cpp
 
