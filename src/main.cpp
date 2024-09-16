@@ -1,12 +1,11 @@
 #include <iostream>
-#include <vector>
-#include <ctime>
-#include <cmath>
 #include <fstream>
 #include "model.h"
-#include "layers.h"
-#include "activation_fncs.h"
-#include "data_loaders.h"
+#include "layers/input.h"
+#include "layers/dense.h"
+#include "layers/activation_fncs/relu.h"
+#include "layers/activation_fncs/sigmoid.h"
+#include "data_loaders/mnist_dataloader.h"
 
 
 int main(){
@@ -21,6 +20,8 @@ int main(){
     
     MNISTDataLoader test_dataloader("../test/t10k-images-idx3-ubyte", "../test/t10k-labels-idx1-ubyte", true, true);
     test_dataloader.load();
+
+    model.set_lr_scheduler(new StepLR(0.8, 1));
     
     // model.load("../test/model_save");
     model.summary();
