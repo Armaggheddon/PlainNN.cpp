@@ -1,10 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include "model.h"
-#include "layers.h"
-#include "data_loaders.h"
-#include "lr_scheduler.h"
-#include "activation_fncs.h"
 
 
 int main(){
@@ -22,13 +18,18 @@ int main(){
 
     model.set_lr_scheduler(new StepLR(0.8, 1));
     
-    // model.load("../test/model_save");
+    model.save("../test/model_save");
     model.summary();
-    // EvaluationResult res = model.evaluate(test_dataloader);
+    EvaluationResult res = model.evaluate(test_dataloader);
+    std::printf("Correct: %d/%d\n", res.correct, res.total);
 
-    // std::printf("Correct: %d/%d\n", res.correct, res.total);
+    Model model2;
+    model2.load("../test/model_save");
+    model2.summary();
+    EvaluationResult res2 = model2.evaluate(test_dataloader);
+    std::printf("Correct: %d/%d\n", res2.correct, res2.total);
     
-    model.train(train_dataloader, test_dataloader, 0.01, 1, 64);
+    model.train(train_dataloader, test_dataloader, 0.01, 1, 64, true, "../test/model_save");
 
     // model.save("../test/model_save");
 

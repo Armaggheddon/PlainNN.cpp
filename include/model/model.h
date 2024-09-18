@@ -1,5 +1,5 @@
-#ifndef MODELS_MODEL_H
-#define MODELS_MODEL_H
+#ifndef MODEL_MODEL_H
+#define MODEL_MODEL_H
 
 #include "layers.h"
 #include "lr_scheduler.h"
@@ -29,7 +29,9 @@ class Model{
             DataLoader& train_dataloader,
             double learning_rate,
             int epochs,
-            int batch_size
+            int batch_size,
+            bool save_checkpoint = false,
+            std::string checkpoint_path = ""
         );
 
         void train(
@@ -37,7 +39,9 @@ class Model{
             DataLoader& test_dataloader,
             double learning_rate,
             int epochs,
-            int batch_size
+            int batch_size,
+            bool save_checkpoint = false,
+            std::string checkpoint_path = ""
         );
 
         EvaluationResult evaluate(DataLoader& dataloader, bool show_output = true, bool indent = false);
@@ -48,6 +52,9 @@ class Model{
 
         Layer* get_layer(int index);
 
+        void save(std::string file_name, bool weights_only = false);
+        void load(std::string file_name, bool weights_only = false);
+
     private:
         std::vector<Layer*> m_layers;
 
@@ -56,14 +63,16 @@ class Model{
             DataLoader* test_dataloader,
             double learning_rate,
             int epochs,
-            int batch_size
+            int batch_size,
+            bool save_checkpoint,
+            std::string checkpoint_path
         );
 
         LRScheduler *m_lr_scheduler;
 
-        void count_to_size(int count, char* buff, size_t size = sizeof(double));
+        void count_to_size(int count, char* buff, size_t buff_size, size_t size = 0);
         void print_progress(int curr_progress, int max_progress, std::string trailing_message = "", int width = 50, bool indent = true);
         void make_duration_readable(const std::chrono::duration<double>& duration, char* buff);
 };
 
-#endif // MODELS_MODEL_H
+#endif // MODEL_MODEL_H

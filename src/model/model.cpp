@@ -2,10 +2,13 @@
 
 #include "layers.h"
 #include "data_loaders.h"
+#include "model_storage.h"
+#include "utils.h"
 
 #include <vector>
 #include <chrono>
 #include <algorithm>
+#include <map>
 
 Model::Model(){}
 
@@ -40,45 +43,88 @@ void Model::set_lr_scheduler(LRScheduler* scheduler){
 }
 
 
-// TODO: Implement this function
 void Model::summary(){
-    std::printf("_________________________________________________________________\n");
-    std::printf("Layer (type)                 Output Shape              Param #\n");
-    std::printf("=================================================================\n");
+    std::printf("___________________________________________________________\n");
+    std::printf("%-12s %-12s %-15s %15s\n", "Layer", "(Type)", "Output Shape", "Param #");
+    std::printf("===========================================================\n");
 
-    // int total_params = 0;
+    int total_param_count = 0;
 
-    // for(int i = 0; i < layers.size(); i++){
-    //     Layer* layer = layers[i];
-    //     std::string layer_name = "[" + std::to_string(i) + "] " + layer->name();
-    //     std::string output_shape = "( 1, " + std::to_string(layer->config.output_size) + ")";
-    //     int num_params = 0;
+    std::map<int, int> encountered_layers;
 
-    //     if(layer->config.type == LayerType::DENSE){
-    //         Dense* dense_layer = dynamic_cast<Dense*>(layer);
-    //         if(dense_layer == nullptr){
-    //             std::printf("Error during cast from Layer to Dense\n");
-    //             return;
-    //         }
-    //         num_params = dense_layer->config.input_size * dense_layer->config.output_size + dense_layer->config.output_size;
-    //     }
+    for(int i = 0; i < m_layers.size(); i++){
+        Layer* layer = m_layers[i];
 
-    //     total_params += num_params;
+        LayerSummary summary = layer->get_summary();
 
-    //     std::printf("%-24s %-24s %12d\n", layer_name.c_str(), output_shape.c_str(), num_params);
-    // }
+        std::string layer_name;
 
-    // std::printf("=================================================================\n");
+        if(encountered_layers.count(summary.layer_type) == 0){
+            encountered_layers[summary.layer_type]++;
+            layer_name += string_to_lower(summary.layer_name);
+        } else{
+            encountered_layers[summary.layer_type]++;
+            layer_name += string_to_lower(summary.layer_name) + "_" + std::to_string(encountered_layers[summary.layer_type]-1);
+        }
 
-    // char trainable_params_buff[16], non_trainable_params_buff[16], total_params_buff[16];
-    // num_params_to_size(total_params * sizeof(double), total_params_buff);
-    // num_params_to_size(total_params * sizeof(double), trainable_params_buff);
-    // num_params_to_size(0 * sizeof(double), non_trainable_params_buff);
+        std::string layer_type = "(" + layer->name() + ")";
+        std::string output_shape = layer->output.shape_str();
 
-    // std::printf("Total params: %d (%s)\n", total_params, total_params_buff);
-    // std::printf("Trainable params: %d (%s)\n", total_params, trainable_params_buff);
-    // std::printf("Non-trainable params: 0 (%s)\n", non_trainable_params_buff);
-    // std::printf("_________________________________________________________________\n");
+        int num_params = 0;
+
+        num_params = summary.param_count;
+
+        if(summary.layer_name.compare(LAYER_TYPE_NAMES[LayerType::INPUT]) != 0){
+            total_param_count += num_params;
+        }
+
+        std::printf("%-12s %-12s %-15s %15d\n", layer_name.c_str(), layer_type.c_str(), output_shape.c_str(), num_params);
+    }
+
+    std::printf("===========================================================\n");
+
+    int params_buff_size = 32;
+    char trainable_params_buff[params_buff_size], non_trainable_params_buff[params_buff_size], total_params_buff[params_buff_size];
+    count_to_size(total_param_count, total_params_buff, params_buff_size, sizeof(double));
+    count_to_size(total_param_count, trainable_params_buff, params_buff_size, sizeof(double));
+    count_to_size(0, non_trainable_params_buff, params_buff_size, sizeof(double));
+
+    std::printf("Total params: %s\n", total_params_buff);
+    std::printf("Trainable params: %s\n", trainable_params_buff);
+    std::printf("Non-trainable params: %s\n", non_trainable_params_buff);
+    std::printf("___________________________________________________________\n");
+}
+
+
+void Model::save(std::string file_name, bool weights_only){
+    if (!weights_only)
+    {
+        std::vector<LayerSummary> layer_summaries;
+        for(int i = 0; i < m_layers.size(); i++){
+            layer_summaries.push_back(m_layers[i]->get_summary());
+        }
+        ModelStorage::save_model_arch(file_name, layer_summaries);
+    }
+
+    std::vector<std::vector<double>> weights;
+
+    for(int i = 0; i < m_layers.size(); i++){
+        weights.push_back(m_layers[i]->get_saveable_params());
+    }
+
+    ModelStorage::save_model_weights(file_name, weights);
+}
+
+
+void Model::load(std::string file_name, bool weights_only){
+    if(!weights_only){
+
+        ModelStorage::load_model_arch(file_name, *this);
+
+        std::printf("Model loaded\n");
+    }
+
+    ModelStorage::load_model_weights(file_name, m_layers.size(), *this);
 }
 
 
@@ -184,9 +230,11 @@ void Model::train(
     DataLoader& train_dataloader,
     double learning_rate,
     int epochs,
-    int batch_size
+    int batch_size,
+    bool save_checkpoint,
+    std::string checkpoint_path
 ){
-    _train(&train_dataloader, nullptr, learning_rate, epochs, batch_size);
+    _train(&train_dataloader, nullptr, learning_rate, epochs, batch_size, save_checkpoint, checkpoint_path);
 }
 
 
@@ -195,9 +243,11 @@ void Model::train(
     DataLoader& test_dataloader,
     double learning_rate,
     int epochs,
-    int batch_size
+    int batch_size,
+    bool save_checkpoint,
+    std::string checkpoint_path
 ){
-    _train(&train_dataloader, &test_dataloader, learning_rate, epochs, batch_size);
+    _train(&train_dataloader, &test_dataloader, learning_rate, epochs, batch_size, save_checkpoint, checkpoint_path);
 }
 
 
@@ -206,8 +256,20 @@ void Model::_train(
     DataLoader* test_dataloader,
     double learning_rate,
     int epochs,
-    int batch_size
+    int batch_size,
+    bool save_checkpoint,
+    std::string checkpoint_path
 ){
+    if(save_checkpoint){
+        if(checkpoint_path.empty()){
+            std::printf("Checkpoint path is required to save the model\n");
+            exit(1);
+        }
+
+        checkpoint_path = checkpoint_path + "_epoch_%d";
+        
+    }
+
     int steps_per_epoch = train_dataloader->steps_per_epoch(batch_size);
     
     char trailing_message_buff[128];
@@ -297,22 +359,31 @@ void Model::_train(
         if(m_lr_scheduler != nullptr){
             m_lr_scheduler->step(learning_rate, epoch);
         }
+
+        if(save_checkpoint){
+            char epoch_checkpoint_path[checkpoint_path.size() + std::to_string(epoch).size() + 1];
+            std::sprintf(epoch_checkpoint_path, checkpoint_path.c_str(), epoch);
+            // Save the arch only on the first epoch
+            save(epoch_checkpoint_path);
+        }
     }
 }
 
 
-void Model::count_to_size(int num_params, char* buff, size_t size){
+void Model::count_to_size(int num_params, char* buff, size_t buff_size, size_t size){
     const char* suffixes[] = {"B", "KB", "MB", "GB", "TB"};
     int suffix_idx = 0;
 
-    num_params *= size;
+    double _num_params = static_cast<double>(num_params);
+    if(size != 0)
+        _num_params *= size;
 
-    while(num_params > 1024 && suffix_idx < 5){
-        num_params /= 1024;
+    while(_num_params > 1024 && suffix_idx < 5){
+        _num_params /= 1024;
         suffix_idx++;
     }
 
-    std::snprintf(buff, size, "%s", suffixes[suffix_idx]);
+    std::snprintf(buff, buff_size, "%d (%.2f %s)", num_params, _num_params, suffixes[suffix_idx]);
 }
 
 void Model::print_progress(int curr_progress, int total, std::string trailing_message, int width, bool indent){
