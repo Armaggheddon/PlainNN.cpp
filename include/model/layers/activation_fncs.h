@@ -18,6 +18,7 @@ const std::string ACTIVATION_NAMES[] = {
     "Softmax"
 };
 
+
 class ActivationFn{
     public:
         ~ActivationFn(){};
@@ -30,6 +31,7 @@ class ActivationFn{
         std::string name(){return ACTIVATION_NAMES[fn_type];}
         ActivationType type(){return fn_type;}
 };
+ActivationFn* get_activation_fn_from_name(std::string name);
 
 
 class ReLU : public ActivationFn{
@@ -45,6 +47,15 @@ class ReLU : public ActivationFn{
 class Sigmoid : public ActivationFn{
     public:
         Sigmoid();
+
+        double forward(const double input);
+
+        double backward(const double input);
+};
+
+class None : public ActivationFn{
+    public:
+        None();
 
         double forward(const double input);
 
