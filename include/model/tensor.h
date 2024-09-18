@@ -3,11 +3,14 @@
 
 #include <vector>
 #include <initializer_list>
+#include <string>
 
 struct Tensor{
     public:
 
         Tensor();
+
+        Tensor(std::vector<int> dims, bool random_init = false, double fill_value = 0 );
         
         Tensor(std::initializer_list<int> dims, bool random_init = false, double fill_value = 0 );
 
@@ -24,6 +27,8 @@ struct Tensor{
         double& operator[](int index);
         
         void reshape(std::initializer_list<int> dims, bool random_init = false, double fill_value = 0);
+
+        std::string shape_str();
 
     private:
         std::vector<int> m_shape;

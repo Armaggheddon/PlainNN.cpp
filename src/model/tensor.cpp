@@ -21,6 +21,20 @@ Tensor::Tensor(std::initializer_list<int> dims, bool random_init, double fill_va
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
 }
 
+Tensor::Tensor(std::vector<int> dims, bool random_init, double fill_value ){
+    int data_size = 1;
+    int dim_sum = 0;
+    for(int dim : dims){
+        m_shape.push_back(dim);
+        data_size *= dim;
+        dim_sum += dim;
+    }
+
+    m_data.resize(data_size, fill_value);
+
+    if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
+}
+
 void Tensor::clear(){
     std::fill(m_data.begin(), m_data.end(), 0);
 }
@@ -61,4 +75,17 @@ void Tensor::reshape(std::initializer_list<int> dims, bool random_init, double f
     m_data.resize(data_size, 0);
 
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
+}
+
+std::string Tensor::shape_str(){
+    std::string str;
+    str += "(";
+
+    for(int i = 0; i < m_shape.size(); i++){
+        str += std::to_string(m_shape[i]);
+        if(i != m_shape.size() - 1) str += ", ";
+    }
+
+    str += ")";
+    return str;
 }
