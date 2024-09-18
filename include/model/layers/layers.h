@@ -17,6 +17,15 @@ const std::string LAYER_TYPE_NAMES[] = {
     "Dense"
 };
 
+struct LayerSummary{
+    LayerType layer_type;
+    std::string layer_name;
+    std::string activation_fn;
+    int param_count;
+    long int param_size;
+    std::vector<int> layer_shape;
+};
+
 
 class Layer{
     public:
@@ -37,11 +46,15 @@ class Layer{
 
         virtual void initialize(std::vector<int> input_shape) = 0;
 
+        virtual LayerSummary get_summary() = 0;
+
         std::string name(){return LAYER_TYPE_NAMES[layer_type];};
 };
+Layer* build_layer_from_name(std::string name, std::vector<int> layer_shape, ActivationFn* activation_fn);
 
 class Input : public Layer{
     public:
+        Input(std::vector<int> shape);
         Input(std::initializer_list<int> shape);
 
         Tensor& forward( Tensor& input);
@@ -51,6 +64,8 @@ class Input : public Layer{
         void load_params( std::vector<double>& params);
 
         void initialize(std::vector<int> input_shape);
+
+        LayerSummary get_summary();
 };
 
 
@@ -66,6 +81,8 @@ class Dense : public Layer{
         void step(double learning_rate, int batch_size);
         std::vector<double> get_saveable_params();
         void load_params( std::vector<double>& params);
+
+        LayerSummary get_summary();
 
     private:
         int input_size, output_size; 

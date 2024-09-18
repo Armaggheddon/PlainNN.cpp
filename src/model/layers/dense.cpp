@@ -176,3 +176,17 @@ void Dense::step(double learning_rate, int batch_size){
     d_weights.clear();
     d_biases.clear();
 }
+
+LayerSummary Dense::get_summary(){
+    LayerSummary summary;
+    summary.layer_type = this->layer_type;
+    summary.layer_name = LAYER_TYPE_NAMES[this->layer_type];
+    summary.activation_fn = this->activation_fn->name();
+
+    summary.param_count = this->input_size * this->output_size + this->output_size;
+    summary.param_size = sizeof(double);
+
+    summary.layer_shape = weights.shape();
+    return summary;
+}
+
