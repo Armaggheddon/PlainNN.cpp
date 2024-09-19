@@ -52,7 +52,7 @@ void Model::summary(){
 
     std::map<int, int> encountered_layers;
 
-    for(int i = 0; i < m_layers.size(); i++){
+    for(size_t i = 0; i < m_layers.size(); i++){
         Layer* layer = m_layers[i];
 
         LayerSummary summary = layer->get_summary();
@@ -100,7 +100,7 @@ void Model::save(std::string file_name, bool weights_only){
     if (!weights_only)
     {
         std::vector<LayerSummary> layer_summaries;
-        for(int i = 0; i < m_layers.size(); i++){
+        for(size_t i = 0; i < m_layers.size(); i++){
             layer_summaries.push_back(m_layers[i]->get_summary());
         }
         ModelStorage::save_model_arch(file_name, layer_summaries);
@@ -108,7 +108,7 @@ void Model::save(std::string file_name, bool weights_only){
 
     std::vector<std::vector<double>> weights;
 
-    for(int i = 0; i < m_layers.size(); i++){
+    for(size_t i = 0; i < m_layers.size(); i++){
         weights.push_back(m_layers[i]->get_saveable_params());
     }
 
@@ -131,7 +131,7 @@ void Model::load(std::string file_name, bool weights_only){
 Tensor Model::forward(Tensor& input){
     Tensor output = input;
 
-    for(int i = 1; i < m_layers.size(); i++){
+    for(size_t i = 1; i < m_layers.size(); i++){
         output = m_layers[i]->forward(output);
     }
 
@@ -140,14 +140,15 @@ Tensor Model::forward(Tensor& input){
 
 
 EvaluationResult Model::evaluate(DataLoader& dataloader, bool show_output, bool indent){
-    int correct = 0, total = 0;
+    int correct = 0;
     int total_steps = dataloader.steps_per_epoch(1);
     double accuracy = 0, loss = 0, tmp_loss = 0;
 
     auto running_s_time = std::chrono::system_clock::now();
     auto step_s_time = std::chrono::system_clock::now();
 
-    char step_time_buff[16], running_time_buff[16];
+    size_t time_buff_size = 24;
+    char step_time_buff[time_buff_size], running_time_buff[time_buff_size];
 
     std::vector<double> loss_per_class(dataloader.num_classes(), 0);
     
@@ -198,8 +199,8 @@ EvaluationResult Model::evaluate(DataLoader& dataloader, bool show_output, bool 
             std::chrono::duration<double> step_duration = step_e_time - step_s_time;
             std::chrono::duration<double> running_duration = step_e_time - running_s_time;
 
-            make_duration_readable(step_duration, step_time_buff);
-            make_duration_readable(running_duration, running_time_buff);
+            make_duration_readable(step_duration, step_time_buff, time_buff_size);
+            make_duration_readable(running_duration, running_time_buff, time_buff_size);
 
             std::sprintf(message_buff, "Loss: %.04f - Accuracy: %.04f - %s elapsed - %s/step", 
                 loss/(step+1), (double)correct/(step+1), running_time_buff, step_time_buff);
@@ -273,7 +274,8 @@ void Model::_train(
     int steps_per_epoch = train_dataloader->steps_per_epoch(batch_size);
     
     char trailing_message_buff[128];
-    char training_running_time[16], epoch_running_time_buff[16], step_time_buff[16];
+    size_t time_buff_size = 24;
+    char epoch_running_time_buff[time_buff_size], step_time_buff[time_buff_size];
 
     for(int epoch=0; epoch < epochs; epoch++){
 
@@ -298,7 +300,7 @@ void Model::_train(
             double error = 0;
             int correct = 0;
 
-            for(int b = 0; b<input.size(); b++){
+            for(size_t b = 0; b<input.size(); b++){
 
                 Tensor output = forward(input[b]);
 
@@ -323,26 +325,33 @@ void Model::_train(
             
                 int last_layer_idx = m_layers.size() - 1;
                 Tensor next_layer_grads = Tensor();
-                for(int layer = last_layer_idx; layer > 0; layer--){
+                for(int layer_idx = last_layer_idx; layer_idx > 0; layer_idx--){
+                    
+                    if(m_layers[layer_idx]->is_frozen){
+                        continue;
+                    }
 
-                    next_layer_grads = m_layers[layer]->backward(
-                        layer == 1 ? &input[b] : &m_layers[layer-1]->output,
-                        layer == last_layer_idx ? nullptr : m_layers[layer+1]->get_params(),
-                        layer == last_layer_idx ? &batch_targets[b] : &next_layer_grads
+                    next_layer_grads = m_layers[layer_idx]->backward(
+                        layer_idx == 1 ? &input[b] : &m_layers[layer_idx-1]->output,
+                        layer_idx == last_layer_idx ? nullptr : m_layers[layer_idx+1]->get_params(),
+                        layer_idx == last_layer_idx ? &batch_targets[b] : &next_layer_grads
                     );
                 }
             }
 
-            for(int layer = 1; layer < m_layers.size(); layer++){
-                m_layers[layer]->step(learning_rate, batch_size);
+            for(size_t layer_idx = 1; layer_idx < m_layers.size(); layer_idx++){
+                if(m_layers[layer_idx]->is_frozen){
+                    continue;
+                }
+                m_layers[layer_idx]->step(learning_rate, batch_size);
             }
 
             auto step_e_time = std::chrono::system_clock::now();
             std::chrono::duration<double> step_duration = step_e_time - step_s_time;
             std::chrono::duration<double> running_epoch_time = step_e_time - epoch_s_time;
             
-            make_duration_readable(step_duration, step_time_buff);
-            make_duration_readable(running_epoch_time, epoch_running_time_buff);
+            make_duration_readable(step_duration, step_time_buff, time_buff_size);
+            make_duration_readable(running_epoch_time, epoch_running_time_buff, time_buff_size);
 
             std::sprintf(trailing_message_buff, "%s %s/step - Error: %.04f - Accuracy: %.04f", 
                 epoch_running_time_buff, step_time_buff, error/batch_size, (double)correct/batch_size);
@@ -363,7 +372,6 @@ void Model::_train(
         if(save_checkpoint){
             char epoch_checkpoint_path[checkpoint_path.size() + std::to_string(epoch).size() + 1];
             std::sprintf(epoch_checkpoint_path, checkpoint_path.c_str(), epoch);
-            // Save the arch only on the first epoch
             save(epoch_checkpoint_path);
         }
     }
@@ -397,20 +405,20 @@ void Model::print_progress(int curr_progress, int total, std::string trailing_me
     std::fflush(stdout);
 }
 
-void Model::make_duration_readable(const std::chrono::duration<double>& duration, char* buff){
+void Model::make_duration_readable(const std::chrono::duration<double>& duration, char* buff, size_t buff_size){
     
     long int us = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     if(us >= 1000000){
         // If step duration is greater than 1 second,
         // print the time formatted in seconds
-        std::sprintf(buff, "%4lds", us/1000000);
+        std::snprintf(buff, buff_size, "%4lds", us/1000000);
     }else if (us >= 1000){
         // If step duration is greater than 1 millisecond,
         // print the time formatted in milliseconds
-        std::sprintf(buff, "%3ldms", us/1000);
+        std::snprintf(buff, buff_size, "%3ldms", us/1000);
     }else{
         // If step duration is less than 1 millisecond,
         // print the time formatted in microseconds
-        std::sprintf(buff, "%3ldus", us);
+        std::snprintf(buff, buff_size, "%3ldus", us);
     }
 }

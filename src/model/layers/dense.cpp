@@ -3,7 +3,7 @@
 
 #include <vector>
 
-Dense::Dense(int input_size, int output_size, ActivationFn* activation){
+Dense::Dense(int input_size, int output_size, ActivationFn* activation, bool frozen){
 
     this->input_size = input_size;
     this->output_size = output_size;
@@ -17,10 +17,11 @@ Dense::Dense(int input_size, int output_size, ActivationFn* activation){
     this->biases = Tensor({output_size});
     this->d_biases = Tensor({output_size});
 
+    this->is_frozen = frozen;
     this->is_initialized = true;
 }
 
-Dense::Dense(int output_size, ActivationFn* activation){
+Dense::Dense(int output_size, ActivationFn* activation, bool frozen){
 
     this->output_size = output_size;
 
@@ -29,6 +30,7 @@ Dense::Dense(int output_size, ActivationFn* activation){
 
     this->output = Tensor({output_size});
 
+    this->is_frozen = frozen;
     this->is_initialized = false;
 }
 
