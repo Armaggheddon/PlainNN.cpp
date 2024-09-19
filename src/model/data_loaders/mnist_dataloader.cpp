@@ -46,7 +46,7 @@ int MNISTDataLoader::steps_per_epoch(int batch_size){
 }
 
 BatchData MNISTDataLoader::get_batch(int batch_size){
-    if(m_offset + batch_size > m_dataset.size() && m_drop_last){
+    if(static_cast<size_t>(m_offset + batch_size) > m_dataset.size() && m_drop_last){
         new_epoch();
         return BatchData();
     }
@@ -105,7 +105,7 @@ void MNISTDataLoader::load_data(){
     data_file.read(reinterpret_cast<char*>(&cols), sizeof(cols));
     cols = __builtin_bswap32(cols);
 
-    if(m_dataset.size() != number_of_images)
+    if(m_dataset.size() != static_cast<size_t>(number_of_images))
         m_dataset.resize(number_of_images);
 
     for(int i=0; i<number_of_images; i++){
@@ -136,7 +136,7 @@ void MNISTDataLoader::load_labels(){
     labels_file.read(reinterpret_cast<char*>(&number_of_labels), sizeof(number_of_labels));
     number_of_labels = __builtin_bswap32(number_of_labels);
 
-    if(m_dataset.size() != number_of_labels)
+    if(m_dataset.size() != static_cast<size_t>(number_of_labels))
         m_dataset.resize(number_of_labels);
     
     for(int i=0; i<number_of_labels; i++){

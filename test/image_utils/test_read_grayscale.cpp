@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
         return TEST_FAIL;
     }
 
-    if(gray_img.size() != width || gray_img[0].size() != height){
+    if(gray_img.size() != static_cast<size_t>(width) || gray_img[0].size() != static_cast<size_t>(height)) {
         std::cout << "Image vector dimension does not match with returned dimension" << std::endl;
         return TEST_FAIL;
     }

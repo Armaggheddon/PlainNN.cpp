@@ -10,29 +10,15 @@ int main(){
     model.add_layer(new Dense(128, new ReLU()));
     model.add_layer(new Dense(10, new Sigmoid()));
 
-    MNISTDataLoader train_dataloader("../test/train-images-idx3-ubyte", "../test/train-labels-idx1-ubyte", true, true);
-    train_dataloader.load();
+    model.load("../data/utils/mnist_fc128_relu_fc10_sigmoid", true);
     
-    MNISTDataLoader test_dataloader("../test/t10k-images-idx3-ubyte", "../test/t10k-labels-idx1-ubyte", true, true);
-    test_dataloader.load();
-
-    model.set_lr_scheduler(new StepLR(0.8, 1));
-    
-    model.save("../test/model_save");
     model.summary();
-    EvaluationResult res = model.evaluate(test_dataloader);
-    std::printf("Correct: %d/%d\n", res.correct, res.total);
 
-    Model model2;
-    model2.load("../test/model_save");
-    model2.summary();
-    EvaluationResult res2 = model2.evaluate(test_dataloader);
-    std::printf("Correct: %d/%d\n", res2.correct, res2.total);
-    
-    model.train(train_dataloader, test_dataloader, 0.01, 1, 64, true, "../test/model_save");
+    MNISTDataLoader test_data_loader("../data/mnist_dataset/t10k-images-idx3-ubyte", "../data/mnist_dataset/t10k-labels-idx1-ubyte", true, true);
+    test_data_loader.load();
 
-    // model.save("../test/model_save");
-
+    EvaluationResult result = model.evaluate(test_data_loader);
+    std::printf("Correct: %d/%d\n", result.correct, result.total);
 
     return 0;
 }

@@ -72,7 +72,7 @@ void Tensor::reshape(std::initializer_list<int> dims, bool random_init, double f
         dim_sum += dim;
     }
 
-    m_data.resize(data_size, 0);
+    m_data.resize(data_size, fill_value);
 
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
 }
@@ -81,7 +81,7 @@ std::string Tensor::shape_str(){
     std::string str;
     str += "(";
 
-    for(int i = 0; i < m_shape.size(); i++){
+    for(size_t i = 0; i < m_shape.size(); i++){
         str += std::to_string(m_shape[i]);
         if(i != m_shape.size() - 1) str += ", ";
     }

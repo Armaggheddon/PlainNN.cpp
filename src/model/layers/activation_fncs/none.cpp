@@ -8,6 +8,6 @@ double None::forward(const double input){
     return input;
 }
 
-double None::backward(const double input){
+double None::backward( __attribute_maybe_unused__ const double input){
     return 1;
 }

@@ -13,7 +13,7 @@ void ModelStorage::save_model_arch(
 
     file << "{\n";
 
-    for(int summary_idx = 0; summary_idx < layer_summaries.size(); summary_idx++){
+    for(size_t summary_idx = 0; summary_idx < layer_summaries.size(); summary_idx++){
         LayerSummary summary = layer_summaries[summary_idx];
 
         file << "    \"" << std::to_string(summary_idx) << "\": {\n";
@@ -23,7 +23,7 @@ void ModelStorage::save_model_arch(
         file << "        \"param_size\": " << summary.param_size << ",\n";
         file << "        \"layer_shape\": [";
 
-        for(int shape_idx = 0; shape_idx < summary.layer_shape.size(); shape_idx++){
+        for(size_t shape_idx = 0; shape_idx < summary.layer_shape.size(); shape_idx++){
             file << summary.layer_shape[shape_idx];
             if(shape_idx < summary.layer_shape.size() - 1){
                 file << ", ";
@@ -47,7 +47,7 @@ void ModelStorage::save_model_weights(
 ){
     std::ofstream file(file_name + MODEL_WEIGHTS_FILE_EXT, std::ios::binary);
 
-    for(int weight_idx = 0; weight_idx < weights.size(); weight_idx++){
+    for(size_t weight_idx = 0; weight_idx < weights.size(); weight_idx++){
         std::vector<double> weight = weights[weight_idx];
 
         file.write((char*)weight.data(), weight.size() * sizeof(double));
@@ -83,7 +83,7 @@ void ModelStorage::load_model_arch(
 
     for(json_object_element_s *element = root_obj->start; element != nullptr; element = element->next){
 
-        json_string_s* key = element->name;
+        //json_string_s* key = element->name;
 
         json_object_s* layer_obj = json_value_as_object(element->value);
         
@@ -94,10 +94,10 @@ void ModelStorage::load_model_arch(
         json_string_s* activation_fn = json_value_as_string(activation_fn_obj->value);
 
         json_object_element_s* param_count_obj = activation_fn_obj->next;
-        json_number_s* param_count = json_value_as_number(param_count_obj->value);
+        //json_number_s* param_count = json_value_as_number(param_count_obj->value);
 
         json_object_element_s* param_size_obj = param_count_obj->next;
-        json_number_s* param_size = json_value_as_number(param_size_obj->value);
+        //json_number_s* param_size = json_value_as_number(param_size_obj->value);
 
         json_object_element_s* layer_shape_obj = param_size_obj->next;
         json_array_s* layer_shape = json_value_as_array(layer_shape_obj->value);
@@ -127,6 +127,9 @@ void ModelStorage::load_model_weights(
     Model& model
 ){
     std::ifstream file(file_name + MODEL_WEIGHTS_FILE_EXT, std::ios::binary);
+    if(!file.is_open()){
+        throw std::runtime_error("Error opening file.");
+    }
 
     for(int layer_idx = 0; layer_idx < layer_count; layer_idx++){
         Layer* layer = model.get_layer(layer_idx);

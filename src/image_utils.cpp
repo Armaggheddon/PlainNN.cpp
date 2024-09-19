@@ -66,7 +66,7 @@ int save_grayscale(
     const std::string image_path,
     const std::vector<std::vector<unsigned char> > &image
 ){
-    int extension_idx = image_path.find_last_of(".");
+    size_t extension_idx = image_path.find_last_of(".");
     if(extension_idx == std::string::npos){
         std::cerr << "Error: invalid image path" << std::endl;
         return 0;
@@ -74,8 +74,8 @@ int save_grayscale(
 
     unsigned char *data = new unsigned char[image.size() * image[0].size()];
     
-    for(int i=0; i<image.size(); i++){
-        for(int j=0; j<image[0].size(); j++){
+    for(size_t i=0; i<image.size(); i++){
+        for(size_t j=0; j<image[0].size(); j++){
             data[i * image[0].size() + j] = image[i][j];
         }
     }
@@ -101,15 +101,15 @@ int save_rgb(
 ){
 
     // get the pointer to the correct function based on the image type
-    int extension_idx = image_path.find_last_of(".");
+    size_t extension_idx = image_path.find_last_of(".");
     if(extension_idx == std::string::npos){
         std::cerr << "Error: invalid image path" << std::endl;
         return 0;
     }
 
     std::vector<unsigned char> data(image.size() * image[0].size() * 3);
-    for(int i=0; i<image.size(); i++){
-        for(int j=0; j<image[0].size(); j++){
+    for(size_t i=0; i<image.size(); i++){
+        for(size_t j=0; j<image[0].size(); j++){
             for(int k=0; k<3; k++){
                 data[(i * image[0].size() + j) * 3 + k] = image[i][j][k];
             }
