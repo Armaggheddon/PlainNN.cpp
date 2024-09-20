@@ -10,6 +10,9 @@ void ModelStorage::save_model_arch(
     std::vector<LayerSummary> layer_summaries
 ){
     std::ofstream file(file_name + MODEL_ARCH_FILE_EXT);
+    if(!file.is_open()){
+        throw std::runtime_error("Error opening architecture file: " + file_name + MODEL_ARCH_FILE_EXT);
+    }
 
     file << "{\n";
 
@@ -46,6 +49,9 @@ void ModelStorage::save_model_weights(
     std::vector<std::vector<double> > weights
 ){
     std::ofstream file(file_name + MODEL_WEIGHTS_FILE_EXT, std::ios::binary);
+    if(!file.is_open()){
+        throw std::runtime_error("Error opening weights file: " + file_name + MODEL_WEIGHTS_FILE_EXT);
+    }
 
     for(size_t weight_idx = 0; weight_idx < weights.size(); weight_idx++){
         std::vector<double> weight = weights[weight_idx];
@@ -64,6 +70,9 @@ void ModelStorage::load_model_arch(
     Model& model
 ){
     std::ifstream file(file_name + MODEL_ARCH_FILE_EXT);
+    if(!file.is_open()){
+        throw std::runtime_error("Error opening architechture file: " + file_name + MODEL_ARCH_FILE_EXT);
+    }
     std::string line, lines;
 
     while(std::getline(file, line)){
@@ -128,7 +137,7 @@ void ModelStorage::load_model_weights(
 ){
     std::ifstream file(file_name + MODEL_WEIGHTS_FILE_EXT, std::ios::binary);
     if(!file.is_open()){
-        throw std::runtime_error("Error opening file.");
+        throw std::runtime_error("Error opening weights file: " + file_name + MODEL_WEIGHTS_FILE_EXT);
     }
 
     for(int layer_idx = 0; layer_idx < layer_count; layer_idx++){

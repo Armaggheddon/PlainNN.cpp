@@ -1,6 +1,7 @@
 #include "layers.h"
 #include "activation_fncs.h"
 
+#include <stdexcept>
 #include <vector>
 
 Dense::Dense(int input_size, int output_size, ActivationFn* activation, bool frozen){
@@ -69,7 +70,10 @@ std::vector<double> Dense::get_saveable_params(){
 void Dense::load_params( std::vector<double>& params){
     int idx = 0;
 
-    // todo assert initialized
+    size_t params_count = this->input_size * this->output_size + this->output_size;
+    if(params.size() != params_count){
+        throw std::runtime_error("Invalid number of parameters, expected " + std::to_string(params_count) + " got " + std::to_string(params.size()));
+    }
 
     for(int i = 0; i < this->input_size; i++){
         for(int j = 0; j < this->output_size; j++){
@@ -80,6 +84,8 @@ void Dense::load_params( std::vector<double>& params){
     for(int i = 0; i < this->output_size; i++){
         this->biases[i] = params[idx++];
     }
+
+    this->is_initialized = true;
 }
 
 Tensor& Dense::forward(Tensor& input){

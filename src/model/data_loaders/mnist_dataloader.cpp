@@ -86,8 +86,7 @@ void MNISTDataLoader::shuffle(){
 void MNISTDataLoader::load_data(){
     std::ifstream data_file(m_data_path, std::ios::binary);
     if(!data_file.is_open()){
-        std::cerr << "Error opening file: " << m_data_path << std::endl;
-        return;
+        throw std::runtime_error("Error opening file: " + m_data_path);
     }
 
     int magic_number = 0;
@@ -123,8 +122,7 @@ void MNISTDataLoader::load_data(){
 void MNISTDataLoader::load_labels(){
     std::ifstream labels_file(m_labels_path, std::ios::binary);
     if(!labels_file.is_open()){
-        std::cerr << "Error opening file: " << m_labels_path << std::endl;
-        return;
+        throw std::runtime_error("Error opening file: " + m_labels_path);
     }
 
     int magic_number = 0;
