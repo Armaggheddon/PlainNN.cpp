@@ -140,6 +140,14 @@ class Model{
         Layer* get_layer(int index);
 
         /**
+         * @brief Freeze or unfreeze a layer
+         * 
+         * @param index The index of the layer
+         * @param freeze Whether to freeze or unfreeze the layer, default is true
+         */
+        void freeze_layer(int index, bool freeze = true);
+
+        /**
          * @brief Saves the model to disk. The model is saved in two parts:
          * - The architecture of the model is saved in a JSON file with the extension `.json`
          * - The weights of the model are saved in a binary file with the extension `.weights`

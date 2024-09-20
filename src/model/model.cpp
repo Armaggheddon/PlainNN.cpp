@@ -38,6 +38,11 @@ Layer* Model::get_layer(int index){
 }
 
 
+void Model::freeze_layer(int index, bool freeze){
+    m_layers[index]->is_frozen = freeze;
+}
+
+
 void Model::set_lr_scheduler(LRScheduler* scheduler){
     m_lr_scheduler = scheduler;
 }
@@ -370,8 +375,8 @@ void Model::_train(
         }
 
         if(save_checkpoint){
-            char epoch_checkpoint_path[checkpoint_path.size() + std::to_string(epoch).size() + 1];
-            std::sprintf(epoch_checkpoint_path, checkpoint_path.c_str(), epoch);
+            char epoch_checkpoint_path[checkpoint_path.size() + std::to_string(epoch+1).size() + 1];
+            std::sprintf(epoch_checkpoint_path, checkpoint_path.c_str(), epoch+1);
             save(epoch_checkpoint_path);
         }
     }
