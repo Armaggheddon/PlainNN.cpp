@@ -360,7 +360,7 @@ void Model::_train(
 
             std::sprintf(trailing_message_buff, "%s %s/step - Error: %.04f - Accuracy: %.04f", 
                 epoch_running_time_buff, step_time_buff, error/batch_size, (double)correct/batch_size);
-            print_progress(step, steps_per_epoch, trailing_message_buff, 20);
+            print_progress(step+1, steps_per_epoch, trailing_message_buff, 20);
         }
         std::printf("\n");
 
