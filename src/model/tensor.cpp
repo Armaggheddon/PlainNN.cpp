@@ -1,9 +1,9 @@
-#include "tensor.h"
-
-#include "initialization.h"
-
 #include <initializer_list>
 #include <vector>
+#include <string>
+
+#include "tensor.h"
+#include "initialization.h"
 
 Tensor::Tensor(){}
 
@@ -21,6 +21,7 @@ Tensor::Tensor(std::initializer_list<int> dims, bool random_init, double fill_va
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
 }
 
+
 Tensor::Tensor(std::vector<int> dims, bool random_init, double fill_value ){
     int data_size = 1;
     int dim_sum = 0;
@@ -35,29 +36,46 @@ Tensor::Tensor(std::vector<int> dims, bool random_init, double fill_value ){
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
 }
 
+
+Tensor::Tensor(std::initializer_list<int> dims, std::vector<double>& data){
+    int data_size = 1;
+    for(int dim : dims){
+        m_shape.push_back(dim);
+        data_size *= dim;
+    }
+    m_data = data;
+}
+
+
 void Tensor::clear(){
     std::fill(m_data.begin(), m_data.end(), 0);
 }
+
 
 std::vector<int> Tensor::shape(){
     return m_shape;
 }
 
+
 int Tensor::shape(int index){
     return m_shape[index];
 }
+
 
 double* Tensor::data(){
     return m_data.data();
 }
 
+
 int Tensor::size(){
     return m_data.size();
 }
 
+
 double& Tensor::operator[](int index){
     return m_data[index];
 }
+
 
 void Tensor::reshape(std::initializer_list<int> dims, bool random_init, double fill_value){
     int data_size = 1;
@@ -76,6 +94,7 @@ void Tensor::reshape(std::initializer_list<int> dims, bool random_init, double f
 
     if(random_init) GolorotInitialization::initialize(m_data, dim_sum);
 }
+
 
 std::string Tensor::shape_str(){
     std::string str;
