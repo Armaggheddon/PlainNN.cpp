@@ -1,8 +1,8 @@
 #ifndef PLAIN_NN_STORAGE_H
 #define PLAIN_NN_STORAGE_H
 
-#include "plain_nn/layers/layers.h"
-#include "plain_nn/plain_nn.h"
+#include "layers.hpp"
+#include "plain_nn.hpp"
 #include <string>
 #include <vector>
 

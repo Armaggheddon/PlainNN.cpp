@@ -1,5 +1,5 @@
-#include "layers.h"
-#include "activation_fncs.h"
+#include "layers.hpp"
+#include "activation_fncs.hpp"
 
 #include <stdexcept>
 #include <vector>

@@ -1,9 +1,9 @@
 #ifndef PLAIN_NN_PLAIN_NN
 #define PLAIN_NN_PLAIN_NN
 
-#include "layers.h"
-#include "lr_scheduler.h"
-#include "data_loaders.h"
+#include "layers.hpp"
+#include "lr_scheduler.hpp"
+#include "data_loaders.hpp"
 #include <vector>
 #include <chrono>
 

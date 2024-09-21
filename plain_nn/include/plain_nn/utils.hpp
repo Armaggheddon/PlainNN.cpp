@@ -1,7 +1,7 @@
 #ifndef PLAIN_NN_UTILS_H
 #define PLAIN_NN_UTILS_H
 
-#include "tensor.h"
+#include "tensor.hpp"
 #include <string>
 #include <algorithm>
 

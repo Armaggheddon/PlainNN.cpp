@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
-#include "plain_nn.h"
-#include "utils.h"
+#include "plain_nn.hpp"
 
 int main(int argc, char *argv[]){
 
@@ -31,7 +30,6 @@ int main(int argc, char *argv[]){
         Tensor input_tensor({784}, input_vector);
 
         Tensor output = model.forward(input_tensor);
-        // Tensor softmax_output = softmax(output);
 
         // Write the output data
         std::cout.write(reinterpret_cast<const char*>(&output_count), sizeof(size_t)); // Write vector size

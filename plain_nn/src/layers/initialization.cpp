@@ -1,4 +1,4 @@
-#include "initialization.h"
+#include "initialization.hpp"
 #include <cmath>
 #include <vector>
 

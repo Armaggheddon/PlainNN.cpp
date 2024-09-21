@@ -1,6 +1,6 @@
-#include "model_storage.h"
+#include "model_storage.hpp"
 
-#include "layers.h"
+#include "layers.hpp"
 #include "json.h"
 #include <fstream>
 

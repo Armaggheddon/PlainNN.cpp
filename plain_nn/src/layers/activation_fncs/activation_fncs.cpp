@@ -1,5 +1,5 @@
-#include "activation_fncs.h"
-#include "utils.h"
+#include "activation_fncs.hpp"
+#include "utils.hpp"
 
 #include <string>
 

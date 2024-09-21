@@ -1,4 +1,4 @@
-#include "image_utils.h"
+#include "image_utils.hpp"
 
 #include <iostream>
 #include <vector>

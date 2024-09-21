@@ -1,7 +1,7 @@
 #ifndef PLAIN_NN_DATA_LOADERS_H
 #define PLAIN_NN_DATA_LOADERS_H
 
-#include "tensor.h"
+#include "tensor.hpp"
 #include <vector>
 #include <memory>
 #include <string>

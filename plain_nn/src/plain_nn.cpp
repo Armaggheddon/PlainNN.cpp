@@ -1,9 +1,9 @@
-#include "plain_nn.h"
+#include "plain_nn.hpp"
 
-#include "layers.h"
-#include "data_loaders.h"
-#include "model_storage.h"
-#include "utils.h"
+#include "layers.hpp"
+#include "data_loaders.hpp"
+#include "model_storage.hpp"
+#include "utils.hpp"
 
 #include <vector>
 #include <chrono>

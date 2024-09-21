@@ -2,8 +2,8 @@
 #include <stdexcept>
 #include <initializer_list>
 
-#include "layers.h"
-#include "tensor.h"
+#include "layers.hpp"
+#include "tensor.hpp"
 
 Input::Input(std::initializer_list<int> shape, bool frozen){
 

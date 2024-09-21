@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "tensor.h"
-#include "activation_fncs.h"
+#include "tensor.hpp"
+#include "activation_fncs.hpp"
 
 /**
  * @brief Enum to hold the type of the layer

@@ -1,4 +1,4 @@
-#include "plain_nn.h"
+#include "plain_nn.hpp"
 
 int main(){
 

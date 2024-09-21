@@ -2,8 +2,8 @@
 #include <vector>
 #include <string>
 
-#include "tensor.h"
-#include "initialization.h"
+#include "tensor.hpp"
+#include "initialization.hpp"
 
 Tensor::Tensor(){}
 
