@@ -16,6 +16,7 @@ Download the dataset from:
 - [How the backpropagation algorithm works](http://neuralnetworksanddeeplearning.com/chap2.html)
 
 ## Example of a train output on the MNIST dataset
+The weights for epoch 17 are saved in data/model_save/trained_model.json and .weights files
 ```
 ___________________________________________________________
 Layer        (Type)       Output Shape            Param #
