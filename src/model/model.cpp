@@ -126,7 +126,6 @@ void Model::load(std::string file_name, bool weights_only){
 
         ModelStorage::load_model_arch(file_name, *this);
 
-        std::printf("Model loaded\n");
     }
 
     ModelStorage::load_model_weights(file_name, m_layers.size(), *this);
