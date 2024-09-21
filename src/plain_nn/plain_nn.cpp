@@ -1,4 +1,4 @@
-#include "model.h"
+#include "plain_nn.h"
 
 #include "layers.h"
 #include "data_loaders.h"
@@ -10,9 +10,9 @@
 #include <algorithm>
 #include <map>
 
-Model::Model(){}
+PlainNN::PlainNN(){}
 
-void Model::add_layer(Layer* layer){
+void PlainNN::add_layer(Layer* layer){
     if(m_layers.size() == 0 && layer->layer_type != LayerType::INPUT){
         std::printf("First layer must be an input layer\n");
         exit(1);
@@ -33,22 +33,22 @@ void Model::add_layer(Layer* layer){
 }
 
 
-Layer* Model::get_layer(int index){
+Layer* PlainNN::get_layer(int index){
     return m_layers[index];
 }
 
 
-void Model::freeze_layer(int index, bool freeze){
+void PlainNN::freeze_layer(int index, bool freeze){
     m_layers[index]->is_frozen = freeze;
 }
 
 
-void Model::set_lr_scheduler(LRScheduler* scheduler){
+void PlainNN::set_lr_scheduler(LRScheduler* scheduler){
     m_lr_scheduler = scheduler;
 }
 
 
-void Model::summary(){
+void PlainNN::summary(){
     std::printf("___________________________________________________________\n");
     std::printf("%-12s %-12s %-15s %15s\n", "Layer", "(Type)", "Output Shape", "Param #");
     std::printf("===========================================================\n");
@@ -101,7 +101,7 @@ void Model::summary(){
 }
 
 
-void Model::save(std::string file_name, bool weights_only){
+void PlainNN::save(std::string file_name, bool weights_only){
     if (!weights_only)
     {
         std::vector<LayerSummary> layer_summaries;
@@ -121,10 +121,11 @@ void Model::save(std::string file_name, bool weights_only){
 }
 
 
-void Model::load(std::string file_name, bool weights_only){
+void PlainNN::load(std::string file_name, bool weights_only){
     if(!weights_only){
 
         ModelStorage::load_model_arch(file_name, *this);
+
 
     }
 
@@ -132,7 +133,7 @@ void Model::load(std::string file_name, bool weights_only){
 }
 
 
-Tensor Model::forward(Tensor& input){
+Tensor PlainNN::forward(Tensor& input){
     Tensor output = input;
 
     for(size_t i = 1; i < m_layers.size(); i++){
@@ -143,7 +144,7 @@ Tensor Model::forward(Tensor& input){
 }
 
 
-EvaluationResult Model::evaluate(DataLoader& dataloader, bool show_output, bool indent){
+EvaluationResult PlainNN::evaluate(DataLoader& dataloader, bool show_output, bool indent){
     int correct = 0;
     int total_steps = dataloader.steps_per_epoch(1);
     double accuracy = 0, loss = 0, tmp_loss = 0;
@@ -231,7 +232,7 @@ EvaluationResult Model::evaluate(DataLoader& dataloader, bool show_output, bool 
 }
 
 
-void Model::train(
+void PlainNN::train(
     DataLoader& train_dataloader,
     double learning_rate,
     int epochs,
@@ -243,7 +244,7 @@ void Model::train(
 }
 
 
-void Model::train(
+void PlainNN::train(
     DataLoader& train_dataloader,
     DataLoader& test_dataloader,
     double learning_rate,
@@ -256,7 +257,7 @@ void Model::train(
 }
 
 
-void Model::_train(
+void PlainNN::_train(
     DataLoader* train_dataloader,
     DataLoader* test_dataloader,
     double learning_rate,
@@ -382,7 +383,7 @@ void Model::_train(
 }
 
 
-void Model::count_to_size(int num_params, char* buff, size_t buff_size, size_t size){
+void PlainNN::count_to_size(int num_params, char* buff, size_t buff_size, size_t size){
     const char* suffixes[] = {"B", "KB", "MB", "GB", "TB"};
     int suffix_idx = 0;
 
@@ -398,7 +399,7 @@ void Model::count_to_size(int num_params, char* buff, size_t buff_size, size_t s
     std::snprintf(buff, buff_size, "%d (%.2f %s)", num_params, _num_params, suffixes[suffix_idx]);
 }
 
-void Model::print_progress(int curr_progress, int total, std::string trailing_message, int width, bool indent){
+void PlainNN::print_progress(int curr_progress, int total, std::string trailing_message, int width, bool indent){
     char progress_buff[50];
     int progress = (int)((curr_progress / (double)total) * width);
     for(int i = 0; i < width; i++){
@@ -409,7 +410,7 @@ void Model::print_progress(int curr_progress, int total, std::string trailing_me
     std::fflush(stdout);
 }
 
-void Model::make_duration_readable(const std::chrono::duration<double>& duration, char* buff, size_t buff_size){
+void PlainNN::make_duration_readable(const std::chrono::duration<double>& duration, char* buff, size_t buff_size){
     
     long int us = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     if(us >= 1000000){

@@ -1,9 +1,9 @@
-#include "model.h"
+#include "plain_nn.h"
 #include <iostream>
 
 int main(){
 
-    Model saved_model;
+    PlainNN saved_model;
     saved_model.load("../test/model_save/model_save_epoch_0");
 
     saved_model.summary();

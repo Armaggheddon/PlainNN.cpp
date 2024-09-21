@@ -1,3 +1,15 @@
+<div id="top"></div>
+<br/>
+<br/>
+
+<p align="center">
+  <img src="./docs/images/dense_core.png" width="100" height="100">
+</p>
+<h1 align="center">
+    <a href="https://github.com/Armaggheddon/DenseCore Cpp">PlainNN.cpp</a>
+</h1>
+
+
 ## Compilation steps
 Compile with
 1. mkdir -p build
@@ -6,7 +18,6 @@ Compile with
     optionally build with optimizations enable with 
     cmake -DCMAKE_BUILD_TYPE=Release .. 
 1. make
-1. ./mnist_cpp
 
 ## Dataset
 Download the dataset from:

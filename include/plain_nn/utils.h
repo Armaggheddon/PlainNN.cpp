@@ -1,5 +1,5 @@
-#ifndef MODEL_UTILS_H
-#define MODEL_UTILS_H
+#ifndef PLAIN_NN_UTILS_H
+#define PLAIN_NN_UTILS_H
 
 #include "tensor.h"
 #include <string>
@@ -21,4 +21,4 @@ std::string string_to_lower(std::string str);
  */
 Tensor softmax(Tensor& input);
 
-#endif // MODEL_UTILS_H
+#endif // PLAIN_NN_UTILS_H

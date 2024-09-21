@@ -1,5 +1,5 @@
-#ifndef MODEL_MODEL_H
-#define MODEL_MODEL_H
+#ifndef PLAIN_NN_PLAIN_NN
+#define PLAIN_NN_PLAIN_NN
 
 #include "layers.h"
 #include "lr_scheduler.h"
@@ -23,10 +23,10 @@ struct EvaluationResult{
 /**
  * @brief Class that represent a neural network model
  */
-class Model{
+class PlainNN{
     public:
-        Model();
-        ~Model(){};
+        PlainNN();
+        ~PlainNN(){};
 
         /**
          * @brief Set the learning rate scheduler
@@ -222,4 +222,4 @@ class Model{
         void make_duration_readable(const std::chrono::duration<double>& duration, char* buff, size_t buff_size);
 };
 
-#endif // MODEL_MODEL_H
+#endif // PLAIN_NN_PLAIN_NN

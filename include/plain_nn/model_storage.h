@@ -1,8 +1,8 @@
-#ifndef MODEL_STORAGE_H
-#define MODEL_STORAGE_H
+#ifndef PLAIN_NN_STORAGE_H
+#define PLAIN_NN_STORAGE_H
 
-#include "model/layers/layers.h"
-#include "model/model.h"
+#include "plain_nn/layers/layers.h"
+#include "plain_nn/plain_nn.h"
 #include <string>
 #include <vector>
 
@@ -58,7 +58,7 @@ class ModelStorage{
          */
         static void load_model_arch(
             std::string file_name,
-            Model& model
+            PlainNN& model
         );
 
         /**
@@ -73,9 +73,9 @@ class ModelStorage{
         static void load_model_weights(
             std::string file_name,
             int layer_count,
-            Model& model
+            PlainNN& model
         );
 
 };
 
-#endif // MODEL_STORAGE_H
+#endif // PLAIN_NN_STORAGE_H

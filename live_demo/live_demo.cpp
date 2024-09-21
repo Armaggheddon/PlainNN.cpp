@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
-#include "model.h"
+#include "plain_nn.h"
 #include "utils.h"
 
 int main(int argc, char *argv[]){
@@ -13,12 +13,12 @@ int main(int argc, char *argv[]){
 
     std::string model_path = argv[1];
 
-    Model model;
+    PlainNN model;
     model.load(model_path);
 
 
     //size_t input_size = 784 * sizeof(double), output_size = 10 * sizeof(double);
-    size_t input_count = 784, output_count = 10;
+    size_t output_count = 10;
     
     while(1){
         

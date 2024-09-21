@@ -1,5 +1,5 @@
-#ifndef MODEL_TENSOR_H
-#define MODEL_TENSOR_H
+#ifndef PLAIN_NN_TENSOR_H
+#define PLAIN_NN_TENSOR_H
 
 #include <vector>
 #include <initializer_list>
@@ -110,4 +110,4 @@ struct Tensor{
         std::vector<double> m_data;
 };
 
-#endif // MODEL_TENSOR_H
+#endif // PLAIN_NN_TENSOR_H

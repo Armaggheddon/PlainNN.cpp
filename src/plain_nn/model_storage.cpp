@@ -1,6 +1,6 @@
 #include "model_storage.h"
 
-#include "model/layers/layers.h"
+#include "layers.h"
 #include "json.h"
 #include <fstream>
 
@@ -67,7 +67,7 @@ void ModelStorage::save_model_weights(
 
 void ModelStorage::load_model_arch(
     std::string file_name,
-    Model& model
+    PlainNN& model
 ){
     std::ifstream file(file_name + MODEL_ARCH_FILE_EXT);
     if(!file.is_open()){
@@ -133,7 +133,7 @@ void ModelStorage::load_model_arch(
 void ModelStorage::load_model_weights(
     std::string file_name,
     int layer_count,
-    Model& model
+    PlainNN& model
 ){
     std::ifstream file(file_name + MODEL_WEIGHTS_FILE_EXT, std::ios::binary);
     if(!file.is_open()){

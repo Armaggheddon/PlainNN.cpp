@@ -1,5 +1,5 @@
-#ifndef MODEL_LAYERS_LAYERS_H
-#define MODEL_LAYERS_LAYERS_H
+#ifndef PLAIN_NN_LAYERS_LAYERS_H
+#define PLAIN_NN_LAYERS_LAYERS_H
 
 #include <vector>
 
@@ -216,4 +216,4 @@ class Dense : public Layer{
         ActivationFn* activation_fn;
 };
 
-#endif // MODEL_LAYERS_LAYERS_H
+#endif // PLAIN_NN_LAYERS_LAYERS_H

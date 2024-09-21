@@ -1,5 +1,5 @@
-#ifndef MODEL_DATA_LOADERS_H
-#define MODEL_DATA_LOADERS_H
+#ifndef PLAIN_NN_DATA_LOADERS_H
+#define PLAIN_NN_DATA_LOADERS_H
 
 #include "tensor.h"
 #include <vector>
@@ -136,4 +136,4 @@ class MNISTDataLoader : public DataLoader{
         void load_labels();
 };
 
-#endif // MODEL_DATA_LOADERS_H
+#endif // PLAIN_NN_DATA_LOADERS_H

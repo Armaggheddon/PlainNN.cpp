@@ -1,5 +1,5 @@
-#ifndef MODEL_LAYERS_ACTIVATION_FNCS_H
-#define MODEL_LAYERS_ACTIVATION_FNCS_H
+#ifndef PLAIN_NN_LAYERS_ACTIVATION_FNCS_H
+#define PLAIN_NN_LAYERS_ACTIVATION_FNCS_H
 
 #include <cmath>
 #include <string>
@@ -134,4 +134,4 @@ class None : public ActivationFn{
         double backward(const double input);
 };
 
-#endif // MODEL_LAYERS_ACTIVATION_FNCS_H
+#endif // PLAIN_NN_LAYERS_ACTIVATION_FNCS_H

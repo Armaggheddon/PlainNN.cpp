@@ -1,9 +1,9 @@
-#include "model.h"
+#include "plain_nn.h"
 
 int main(){
 
     // create a model with 3 layers
-    Model model;
+    PlainNN model;
     model.add_layer(new Input({784}));
     model.add_layer(new Dense(128, new ReLU()));
     model.add_layer(new Dense(10, new Sigmoid()));

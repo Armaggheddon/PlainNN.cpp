@@ -9,4 +9,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 add_executable(live_demo live_demo.cpp)
 
-target_link_libraries(live_demo mnist_cpp)
+target_link_libraries(live_demo plain_nn)

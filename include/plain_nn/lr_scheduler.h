@@ -1,5 +1,5 @@
-#ifndef MODEL_LR_SCHEDULER_H
-#define MODEL_LR_SCHEDULER_H
+#ifndef PLAIN_NN_LR_SCHEDULER_H
+#define PLAIN_NN_LR_SCHEDULER_H
 
 /**
  * @brief Abstract class for learning rate schedulers. New learning
@@ -38,4 +38,4 @@ class StepLR : public LRScheduler{
         int step_size;
 };
 
-#endif // MODEL_LR_SCHEDULER_H
+#endif // PLAIN_NN_LR_SCHEDULER_H

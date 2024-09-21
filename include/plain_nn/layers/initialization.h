@@ -1,5 +1,5 @@
-#ifndef MODEL_LAYERS_INITIALIZATION_H
-#define MODEL_LAYERS_INITIALIZATION_H
+#ifndef PLAIN_NN_LAYERS_INITIALIZATION_H
+#define PLAIN_NN_LAYERS_INITIALIZATION_H
 
 #include <ctime>
 #include <random>
@@ -32,4 +32,4 @@ class GolorotInitialization{
         );
 };
 
-#endif // MODEL_LAYERS_INITIALIZATION_H
+#endif // PLAIN_NN_LAYERS_INITIALIZATION_H
