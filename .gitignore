@@ -1,7 +1,6 @@
 .vscode/
 build/
-checkpoints/
 test/*-ubyte
 test/*.weights
 test/*.json
-PRIVATE/*
+**/bin
