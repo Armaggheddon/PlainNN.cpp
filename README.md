@@ -11,7 +11,7 @@
 </h1>
 
 <p align="center">
-<a href="https://github.com/Armaggheddon/PlainNN.cpp/commits/master">
+<a href="https://github.com/Armaggheddon/PlainNN.cpp/commits/main">
 <img src="https://img.shields.io/github/last-commit/Armaggheddon/PlainNN.cpp">
 </a>
 <a href="https://github.com/Armaggheddon/PlainNN.cpp">
@@ -20,7 +20,7 @@
 <a href="https://github.com/Armaggheddon/PlainNN.cpp/issues">
 <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/Armaggheddon/PlainNN.cpp">
 </a>
-<a href="https://github.com/Armaggheddon/PlainNN.cpp/blob/master/LICENSE">
+<a href="https://github.com/Armaggheddon/PlainNN.cpp/blob/main/LICENSE">
 <img alt="GitHub License" src="https://img.shields.io/github/license/Armaggheddon/PlainNN.cpp"/>
 </a>
 <!--<a href="https://github.com/Armaggheddon/PlainNN.cpp">
