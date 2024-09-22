@@ -8,7 +8,7 @@
 
 <h1 align=center>
     <a href="https://github.com/Armaggheddon/PlainNN.cpp">PlainNN.cpp</a>
-</div>
+</h1>
 
 <p align="center">
 <a href="https://github.com/Armaggheddon/PlainNN.cpp/commits/master">
