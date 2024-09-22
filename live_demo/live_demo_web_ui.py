@@ -52,7 +52,9 @@ with gr.Blocks() as interface:
             result_output = gr.Label(label="Classification Result", show_label=True, num_top_classes=10)
     btn.click(fn=run_inference, inputs=sketchpad, outputs=result_output)
 
-interface.launch()
+# This is required to use gradio through
+# google Colab
+interface.launch(share=True)
 
 
 
