@@ -228,7 +228,7 @@ Correct: 9558/10000
 This output shows the progress of the model over epochs, with decreasing loss and increasing accuracy, reflecting its improved ability to classify handwritten digits! 🎉
 
 > [!NOTE] 
-> The weights and model architechture for epoch 17 are saved in data/model_save/trained_model.json and .weights files respectively
+> The weights and model architechture for epoch 17 are saved in `data/model_save/trained_model.json` and `.weights` files respectively
 
 ## ⚠️ Challenges with the MNIST Dataset
 While the MNIST dataset is a fantastic starting point, there are some challenges that can arise during the live demo:
