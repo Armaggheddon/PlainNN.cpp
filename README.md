@@ -3,28 +3,37 @@
 <br/>
 
 <p align="center">
-  <img src="./docs/images/dense_core.png" width="100" height="100">
+  <img src="./docs/images/dense_core.png" width="150" height="150">
 </p>
 
-<div align="center" style="font-size: 2em; font-weight: bold;">
+<h1 align=center>
     <a href="https://github.com/Armaggheddon/PlainNN.cpp">PlainNN.cpp</a>
 </div>
 
-<div style="text-align: center;">
-<hr style="width: 50%; margin: auto;">
-</div>
-
-<div align="center" style="font-size: 1.2em; font-weight: normal; color: gray;">
-    Neural Networks in plain C++!🎉
-</div>
-
-<br>
-
-<center>
-<a href="https://colab.research.google.com/github/Armaggheddon/PlainNN.cpp/blob/main/live_demo/PlainNN_live_demo_colab.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+<p align="center">
+<a href="https://github.com/Armaggheddon/PlainNN.cpp/commits/master">
+<img src="https://img.shields.io/github/last-commit/Armaggheddon/PlainNN.cpp">
 </a>
-</center>
+<a href="https://github.com/Armaggheddon/PlainNN.cpp">
+<img src="https://img.shields.io/badge/Maintained-yes-green.svg"/>
+</a>
+<a href="https://github.com/Armaggheddon/PlainNN.cpp/issues">
+<img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/Armaggheddon/PlainNN.cpp">
+</a>
+<a href="https://github.com/Armaggheddon/PlainNN.cpp/blob/master/LICENSE">
+<img alt="GitHub License" src="https://img.shields.io/github/license/Armaggheddon/PlainNN.cpp"/>
+</a>
+<!--<a href="https://github.com/Armaggheddon/PlainNN.cpp">
+<img src="https://img.shields.io/badge/Maintained%3F-no-red.svg">
+</a> -->
+<a href="https://colab.research.google.com/github/Armaggheddon/PlainNN.cpp/blob/main/live_demo/PlainNN_live_demo_colab.ipynb">
+<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+</p>
+
+<p align="center">
+    Neural Networks in plain C++!🎉
+</p>
 
 ##
 Welcome to **PlainNN.cpp**, the lightweight C++ library for building, training, and evaluating neural networks—all without the need for any external libraries! 🚀 This project is designed to be super simple, fully customizable, and perfect for anyone who loves to code deep learning from scratch.
