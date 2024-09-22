@@ -63,9 +63,8 @@ This evolution allows for custom layers, activation functions, and more—making
     Looking to get started quickly? This folder has got you covered with a couple of useful examples to help you understand how to work with PlainNN.cpp. Dive in and start building! 🔧
 
 - `live_demo/`:<br>
-    Want to see the neural network in action? Head over here for the Colab live demo code. You can run the demo in your browser, draw some digits, and watch the model guess them! 🎨🖥️ <a href="https://colab.research.google.com/github/Armaggheddon/PlainNN.cpp/blob/main/live_demo/PlainNN_live_demo_colab.ipynb">
-<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
+    Want to see the neural network in action? Head over here for the Colab live demo code. You can run the demo in your browser, draw some digits, and watch the model guess them! 🎨🖥️
+    <a href="https://colab.research.google.com/github/Armaggheddon/PlainNN.cpp/blob/main/live_demo/PlainNN_live_demo_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
 - `plain_nn/`:<br>
     This is the heart of the library, containing all the actual neural network code. If you want to dig into how things work under the hood, this is the place to explore! 💡
