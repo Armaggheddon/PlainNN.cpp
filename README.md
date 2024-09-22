@@ -6,7 +6,9 @@
   <img src="./docs/images/dense_core.png" width="100" height="100">
 </p>
 <h1 align="center">
-    <a href="https://github.com/Armaggheddon/DenseCore Cpp">PlainNN.cpp</a>
+    <p>PlainNN.cpp</p>
+    <p>-</p>
+    <p>Neural Networks in plain C++!</p>
 </h1>
 
 
