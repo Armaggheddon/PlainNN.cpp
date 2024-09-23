@@ -24,6 +24,7 @@ add_library(plain_nn SHARED
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/activation_fncs/relu.cpp
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/activation_fncs/sigmoid.cpp
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/activation_fncs/tanh.cpp
+    ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/activation_fncs/softmax.cpp
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/dense.cpp
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/initialization.cpp
     ${PROJECT_SOURCE_DIR}/plain_nn/src/layers/input.cpp
