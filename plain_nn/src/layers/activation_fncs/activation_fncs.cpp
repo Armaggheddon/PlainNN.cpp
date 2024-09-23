@@ -14,7 +14,8 @@ ActivationFn* get_activation_fn_from_name(std::string name){
         activation_fn = new Sigmoid();
     } else if(activation_name.compare(string_to_lower(ACTIVATION_NAMES[ActivationType::TANH])) == 0){
         activation_fn = new Tanh();
-        ;
+    } else if(activation_name.compare(string_to_lower(ACTIVATION_NAMES[ActivationType::SOFTMAX])) == 0){
+        activation_fn = new Softmax();
     } else {
         activation_fn = new None();
     }

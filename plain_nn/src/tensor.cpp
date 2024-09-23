@@ -1,6 +1,8 @@
 #include <initializer_list>
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <stdexcept>
 
 #include "tensor.hpp"
 #include "initialization.hpp"
@@ -43,6 +45,11 @@ Tensor::Tensor(std::initializer_list<int> dims, std::vector<double>& data){
         m_shape.push_back(dim);
         data_size *= dim;
     }
+    m_data = data;
+}
+
+Tensor::Tensor(std::vector<int> dims, std::vector<double>& data){
+    m_shape = dims;
     m_data = data;
 }
 

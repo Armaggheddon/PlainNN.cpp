@@ -90,15 +90,19 @@ void Dense::load_params( std::vector<double>& params){
 
 Tensor& Dense::forward(Tensor& input){
 
-    // TODO: assert input shape is same as weights shape
+    double *_input = input.data();
+    double *_output = this->output.data();
+    double *_weights = this->weights.data();
+    double *_biases = this->biases.data();
 
     for(int j = 0; j< this->output_size; j++){
-        this->output[j] = this->biases[j];
+        _output[j] = _biases[j];
         for(int i=0; i<this->input_size; i++){
-            this->output[j] += input[i] * this->weights[i*this->output_size + j];
+            _output[j] += _input[i] * _weights[i*this->output_size + j];
         }
-        this->output[j] = this->activation_fn->forward(this->output[j]);
+        // _output[j] = this->activation_fn->forward(_output[j]);
     } 
+    output = this->activation_fn->forward(output);
 
     return output;
 }
@@ -123,6 +127,9 @@ Tensor Dense::backward(
     double* _d_weights = this->d_weights.data();
     double* _d_biases = this->d_biases.data();
 
+    Tensor act_fn_der = this->activation_fn->backward(this->output);
+    double* _act_fn_der = act_fn_der.data();
+
     for(int perceptron = 0; perceptron < this->output_size; perceptron++){
 
         if(next_weights == nullptr){
@@ -131,7 +138,7 @@ Tensor Dense::backward(
             // next_grad is the gradient of the loss function with respect
             // to the output of this layer.
             _d_err[perceptron] = _next_grad[perceptron] - _output[perceptron];
-            _grads[perceptron] += _d_err[perceptron] * this->activation_fn->backward(_output[perceptron]);
+            _grads[perceptron] += _d_err[perceptron] * _act_fn_der[perceptron];
         } else{
             // If next_grad is not null, it means that this is not the last
             // layer and the next layer is not the output layer. In this case,
@@ -143,7 +150,7 @@ Tensor Dense::backward(
             for(int next_perceptron = 0; next_perceptron < next_layer_size; next_perceptron++){
                 _d_err[perceptron] += _next_grad[next_perceptron] * _next_weights[offset + next_perceptron];
             }
-            _grads[perceptron] += _d_err[perceptron] * this->activation_fn->backward(_output[perceptron]);
+            _grads[perceptron] += _d_err[perceptron] * _act_fn_der[perceptron];
         }
     }
 

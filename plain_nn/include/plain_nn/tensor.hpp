@@ -40,6 +40,14 @@ struct Tensor{
         Tensor(std::initializer_list<int> dims, std::vector<double>& data);
 
         /**
+         * @brief Construct a new Tensor object with the specified data
+         * 
+         * @param dims The dimensions of the tensor
+         * @param data The data to fill the tensor with
+         */
+        Tensor(std::vector<int> dims, std::vector<double>& data);
+
+        /**
          * @brief Clears the contents of the tensor
          * by setting all values to 0
          */

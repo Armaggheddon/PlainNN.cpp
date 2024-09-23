@@ -1,13 +1,14 @@
 #include "activation_fncs.hpp"
+#include "tensor.hpp"
 
 None::None(){
     this->fn_type = ActivationType::NONE;
 }
 
-double None::forward(const double input){
+Tensor None::forward(Tensor& input){
     return input;
 }
 
-double None::backward( __attribute_maybe_unused__ const double input){
-    return 1;
+Tensor None::backward(Tensor& input){
+    return Tensor(input.shape(), false, 1.0);
 }

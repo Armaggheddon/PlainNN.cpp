@@ -13,12 +13,4 @@
  */
 std::string string_to_lower(std::string str);
 
-/**
- * @brief Compute the softmax of a tensor
- * 
- * @param input The input tensor
- * @return Tensor The softmax of the input tensor
- */
-Tensor softmax(Tensor& input);
-
 #endif // PLAIN_NN_UTILS_H

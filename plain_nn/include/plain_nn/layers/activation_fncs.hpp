@@ -1,6 +1,7 @@
 #ifndef PLAIN_NN_LAYERS_ACTIVATION_FNCS_H
 #define PLAIN_NN_LAYERS_ACTIVATION_FNCS_H
 
+#include "tensor.hpp"
 #include <cmath>
 #include <string>
 
@@ -8,14 +9,16 @@ enum ActivationType{
     NONE,
     RELU,
     SIGMOID,
-    TANH
+    TANH,
+    SOFTMAX,
 };
 
 const std::string ACTIVATION_NAMES[] = {
     "None",
     "ReLU",
     "Sigmoid",
-    "Tanh"
+    "Tanh",
+    "Softmax",
 };
 
 /**
@@ -35,7 +38,7 @@ class ActivationFn{
          * @param input The input to the activation function
          * @return double The output of the activation function
          */
-        virtual double forward(const double input) = 0;
+        virtual Tensor forward(Tensor& input) = 0;
 
         /**
          * @brief Backward pass of the activation function
@@ -43,7 +46,7 @@ class ActivationFn{
          * @param input The input to the activation function
          * @return double The gradient of the activation function
          */
-        virtual double backward(const double input) = 0;
+        virtual Tensor backward(Tensor& input) = 0;
 
         /**
          * @brief Get the name of the activation function
@@ -79,9 +82,9 @@ class ReLU : public ActivationFn{
     public:
         ReLU();
 
-        double forward(const double input);
+        Tensor forward(Tensor& input);
 
-        double backward(const double input);
+        Tensor backward(Tensor& input);
 };
 
 /**
@@ -96,9 +99,9 @@ class Sigmoid : public ActivationFn{
         
         Sigmoid();
 
-        double forward(const double input);
+        Tensor forward(Tensor& input);
 
-        double backward(const double input);
+        Tensor backward(Tensor& input);
 };
 
 /**
@@ -113,9 +116,25 @@ class Tanh : public ActivationFn{
         
         Tanh();
 
-        double forward(const double input);
+        Tensor forward(Tensor& input);
 
-        double backward(const double input);
+        Tensor backward(Tensor& input);
+};
+
+/**
+ * @brief Softmax activation function
+ * 
+ * f(x) = exp(x) / sum(exp(x))
+ * 
+ * f'(x) = f(x) * (1 - f(x))
+ */
+class Softmax : public ActivationFn{
+    public:
+        Softmax();
+
+        Tensor forward(Tensor& input);
+
+        Tensor backward(Tensor& input);
 };
 
 class None : public ActivationFn{
@@ -129,9 +148,9 @@ class None : public ActivationFn{
          */
         None();
 
-        double forward(const double input);
+        Tensor forward(Tensor& input);
 
-        double backward(const double input);
+        Tensor backward(Tensor& input);
 };
 
 #endif // PLAIN_NN_LAYERS_ACTIVATION_FNCS_H

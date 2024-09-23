@@ -1,15 +1,28 @@
 #include "activation_fncs.hpp"
-
+#include "tensor.hpp"
 #include <cmath>
+#include <algorithm>
 
 Sigmoid::Sigmoid(){
     this->fn_type = ActivationType::SIGMOID;
 }
 
-double Sigmoid::forward(const double input){
-    return 1 / (1 + std::exp(-input));
+Tensor Sigmoid::forward(Tensor& input){
+
+    std::vector<double> output;
+
+    double* _input = input.data();
+    std::for_each(_input, _input+input.size(), [&output](double& x){output.push_back(1 / (1 + std::exp(-x)));});
+
+    return Tensor(input.shape(), output);
 }
 
-double Sigmoid::backward(const double input){
-    return input * (1 - input);
+Tensor Sigmoid::backward(Tensor& input){
+
+    std::vector<double> output;
+
+    double* _input = input.data();
+    std::for_each(_input, _input+input.size(), [&output](double& x){output.push_back(x * (1 - x));});
+
+    return Tensor(input.shape(), output);
 }
