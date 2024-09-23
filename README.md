@@ -148,7 +148,7 @@ Curious to see PlainNN in action? 🎉 You can either head to the `live_demo/` f
 </a>
 
 <p align="center">
-  <img src="./docs/images/live_demo_example.png" width="740" height="468">
+  <img src="./docs/images/live_demo_image.png" width="740" height="468">
 </p>
 
 ## 🛠️ Extending PlainNN
