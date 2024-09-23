@@ -120,7 +120,7 @@ After these steps, your PlainNN.cpp library will be compiled and ready to use in
 ### 🏃‍♂️ Usage
 Once compiled, dive into the `examples/` folder to see how PlainNN.cpp works. Here's a sneak peek:
 ```cpp
-#include "PlainNN.h"
+#include "plain_nn.h"
 #include <iostream>
 
 // Set up your neural network here and watch it learn 🤖
