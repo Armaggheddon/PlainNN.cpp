@@ -81,7 +81,7 @@ with gr.Blocks() as interface:
 
 # This is required to use gradio through
 # google Colab
-interface.launch(share=False)
+interface.launch(share=True)
 
 
 
