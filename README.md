@@ -3,7 +3,7 @@
 <br/>
 
 <p align="center">
-  <img src="./docs/images/dense_core.png" width="150" height="150">
+  <img src="./docs/images/plain_nn_logo.png" width="150" height="150">
 </p>
 
 <h1 align=center>
@@ -146,6 +146,10 @@ Curious to see PlainNN in action? 🎉 You can either head to the `live_demo/` f
 <a href="https://colab.research.google.com/github/Armaggheddon/PlainNN.cpp/blob/main/live_demo/PlainNN_live_demo_colab.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
+
+<p align="center">
+  <img src="./docs/images/live_demo_example.png" width="740" height="468">
+</p>
 
 ## 🛠️ Extending PlainNN
 Feeling creative? You can:
